@@ -76,7 +76,7 @@ namespace DeskBookingSystem.Controllers
         }
 
         [HttpPost("{deskId}/reserve")]
-        public IActionResult ReserveDesk(int deskId, int employeeId, DateTime bookDate, DateTime reservationDate, int howManyDays)
+        public IActionResult ReserveDesk(int deskId, int userId, DateTime bookDate, DateTime reservationDate, int howManyDays)
         {
             var desk = _context.Desks.Include(d => d.Reservations).FirstOrDefault(d => d.Id == deskId);
             if (desk == null)
@@ -101,7 +101,7 @@ namespace DeskBookingSystem.Controllers
 
             desk.IsAvailable = false;
 
-            _context.Reservations.Add(new Reservation() { DeskId = deskId, EmployeeId = employeeId, BookingDate = bookDate, ReservationDate = reservationDate, HowManyDays = howManyDays });
+            _context.Reservations.Add(new Reservation() { DeskId = deskId, UserId = userId, BookingDate = bookDate, ReservationDate = reservationDate, HowManyDays = howManyDays });
             _context.SaveChanges();
             return Ok("Desk reserved successfully.");
         }
@@ -127,7 +127,7 @@ namespace DeskBookingSystem.Controllers
                     BookingDate = r.BookingDate,
                     ReservationDate = r.ReservationDate,
                     HowManyDays = r.HowManyDays,
-                    EmployeeId = r.EmployeeId
+                    UserId = r.UserId
                 }).ToList()
             }).ToList();
 
@@ -186,7 +186,7 @@ namespace DeskBookingSystem.Controllers
                     BookingDate = r.BookingDate,
                     ReservationDate = r.ReservationDate,
                     HowManyDays = r.HowManyDays,
-                    EmployeeId = r.EmployeeId
+                    UserId = r.UserId
                 }).ToList()
             };
 

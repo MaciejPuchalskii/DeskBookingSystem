@@ -8,7 +8,7 @@ namespace DeskBookingSystem.Data
         public DbSet<Location> Locations { get; set; }
         public DbSet<Desk> Desks { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
-        public DbSet<Employee> Employees { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public BookingContext(DbContextOptions<BookingContext> options) : base(options)
         {
@@ -46,11 +46,6 @@ namespace DeskBookingSystem.Data
               new Desk { Id = 9, IsAvailable = true, LocationId = 5 }
             );
 
-            modelBuilder.Entity<Employee>().HasData(
-                new Employee { Id = 1, Name = "Jan", Surname = "Kowalski", Email = "jan.kowalski@mail.com", IsAdmin = true },
-                new Employee { Id = 2, Name = "Anna", Surname = "Kowalska", Email = "anna.kowalska@example.com", IsAdmin = false }
-            );
-
             modelBuilder.Entity<Reservation>().HasData(
                 new Reservation
                 {
@@ -59,7 +54,7 @@ namespace DeskBookingSystem.Data
                     ReservationDate = DateTime.Now.AddDays(1),
                     HowManyDays = 2,
                     DeskId = 1,
-                    EmployeeId = 2
+                    UserId = 2
                 }
             );
         }
