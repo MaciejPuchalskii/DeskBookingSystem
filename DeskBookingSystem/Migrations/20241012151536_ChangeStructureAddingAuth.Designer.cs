@@ -3,6 +3,7 @@ using System;
 using DeskBookingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeskBookingSystem.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    partial class BookingContextModelSnapshot : ModelSnapshot
+    [Migration("20241012151536_ChangeStructureAddingAuth")]
+    partial class ChangeStructureAddingAuth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.20");
@@ -146,20 +149,20 @@ namespace DeskBookingSystem.Migrations
                     b.Property<int>("DeskId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("HowManyDays")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeskId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Reservations");
 
@@ -167,11 +170,11 @@ namespace DeskBookingSystem.Migrations
                         new
                         {
                             Id = 1,
-                            BookingDate = new DateTime(2024, 10, 12, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4553),
+                            BookingDate = new DateTime(2024, 10, 12, 17, 15, 36, 454, DateTimeKind.Local).AddTicks(5773),
                             DeskId = 1,
+                            EmployeeId = 2,
                             HowManyDays = 2,
-                            ReservationDate = new DateTime(2024, 10, 13, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4607),
-                            UserId = 2
+                            ReservationDate = new DateTime(2024, 10, 13, 17, 15, 36, 454, DateTimeKind.Local).AddTicks(5822)
                         });
                 });
 
@@ -184,9 +187,6 @@ namespace DeskBookingSystem.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -228,15 +228,15 @@ namespace DeskBookingSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DeskBookingSystem.Models.User", "User")
+                    b.HasOne("DeskBookingSystem.Models.User", "Employee")
                         .WithMany("Reservations")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Desk");
 
-                    b.Navigation("User");
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("DeskBookingSystem.Models.Desk", b =>
