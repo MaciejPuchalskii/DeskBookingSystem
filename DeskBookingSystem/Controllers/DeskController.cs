@@ -1,7 +1,9 @@
 ﻿using DeskBookingSystem.Data;
 using DeskBookingSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace DeskBookingSystem.Controllers
 {
@@ -16,6 +18,7 @@ namespace DeskBookingSystem.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("add")]
         public IActionResult AddDesk(int locationId, bool status)
         {
@@ -31,6 +34,7 @@ namespace DeskBookingSystem.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("addMultiple")]
         public IActionResult AddDesks(int locationId, int amount, bool status)
         {
@@ -56,6 +60,7 @@ namespace DeskBookingSystem.Controllers
             return Ok($"{amount} desks added successfully.");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("{deskId}/remove")]
         public IActionResult RemoveDesk(int deskId)
         {
@@ -139,6 +144,7 @@ namespace DeskBookingSystem.Controllers
             return Ok(availableDesksDto);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{deskId}/disable")]
         public IActionResult SetDeskUnavailable(int deskId)
         {
