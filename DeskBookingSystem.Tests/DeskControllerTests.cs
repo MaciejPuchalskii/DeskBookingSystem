@@ -122,7 +122,7 @@ namespace DeskBookingSystem.Tests
             // Arrange
             var context = InMemoryContext();
             var desk = new Desk { Id = 1, IsAvailable = true, LocationId = 1 };
-            var reservation = new Reservation { Id = 1, DeskId = 1, ReservationDate = DateTime.Now.AddDays(1), HowManyDays = 2, EmployeeId = 2 };
+            var reservation = new Reservation { Id = 1, DeskId = 1, ReservationDate = DateTime.Now.AddDays(1), HowManyDays = 2, UserId = 2 };
             context.Desks.Add(desk);
             context.Reservations.Add(reservation);
             context.SaveChanges();
@@ -335,7 +335,7 @@ namespace DeskBookingSystem.Tests
             var context = InMemoryContext();
             var desk = new Desk { Id = 1, IsAvailable = true, LocationId = 1 };
             context.Desks.Add(desk);
-            context.Reservations.Add(new Reservation { DeskId = 1, ReservationDate = DateTime.Now.AddDays(2), HowManyDays = 2, EmployeeId = 1 });
+            context.Reservations.Add(new Reservation { DeskId = 1, ReservationDate = DateTime.Now.AddDays(2), HowManyDays = 2, UserId = 1 });
             context.SaveChanges();
 
             var controller = new DeskController(context);

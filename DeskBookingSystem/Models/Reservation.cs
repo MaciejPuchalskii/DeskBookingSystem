@@ -14,7 +14,7 @@ namespace DeskBookingSystem.Models
         public int DeskId { get; set; }
         public Desk Desk { get; set; }
 
-        public int EmployeeId { get; set; }
-        public Employee Employee { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
     }
 }

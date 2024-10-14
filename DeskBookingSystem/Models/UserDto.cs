@@ -1,13 +1,16 @@
 ﻿namespace DeskBookingSystem.Models
 {
-    public class Employee
+    public class UserDto
     {
         public int Id { get; set; }
+
+        public string UserName { get; set; }
         public string Name { get; set; }
+
         public string Surname { get; set; }
+
         public string Email { get; set; }
 
-        public bool IsAdmin { get; set; }
-        public List<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public List<ReservationDto> Reservations { get; set; } = new List<ReservationDto>();
     }
 }

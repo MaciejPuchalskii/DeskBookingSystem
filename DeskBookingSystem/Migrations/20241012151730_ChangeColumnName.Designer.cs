@@ -3,6 +3,7 @@ using System;
 using DeskBookingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeskBookingSystem.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    partial class BookingContextModelSnapshot : ModelSnapshot
+    [Migration("20241012151730_ChangeColumnName")]
+    partial class ChangeColumnName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.20");
@@ -167,10 +170,10 @@ namespace DeskBookingSystem.Migrations
                         new
                         {
                             Id = 1,
-                            BookingDate = new DateTime(2024, 10, 12, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4553),
+                            BookingDate = new DateTime(2024, 10, 12, 17, 17, 30, 745, DateTimeKind.Local).AddTicks(195),
                             DeskId = 1,
                             HowManyDays = 2,
-                            ReservationDate = new DateTime(2024, 10, 13, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4607),
+                            ReservationDate = new DateTime(2024, 10, 13, 17, 17, 30, 745, DateTimeKind.Local).AddTicks(246),
                             UserId = 2
                         });
                 });
@@ -184,9 +187,6 @@ namespace DeskBookingSystem.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
