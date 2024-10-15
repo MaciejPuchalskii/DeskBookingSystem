@@ -7,12 +7,10 @@ namespace DeskBookingSystem.Controllers
     public class ReservationController : Controller
     {
         private readonly BookingContext _context;
-        private readonly IConfiguration _configuration;
 
-        public ReservationController(BookingContext context, IConfiguration configuration)
+        public ReservationController(BookingContext context)
         {
             _context = context;
-            _configuration = configuration;
         }
 
         [HttpPut("{reservationId}/changeReservationDate")]

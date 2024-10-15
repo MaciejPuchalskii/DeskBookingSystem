@@ -2,18 +2,17 @@
 using DeskBookingSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DeskBookingSystem.Controllers
 {
     public class LocationController : Controller
     {
         private readonly BookingContext _context;
-        private readonly IConfiguration _configuration;
 
-        public LocationController(BookingContext context, IConfiguration configuration)
+        public LocationController(BookingContext context)
         {
             _context = context;
-            _configuration = configuration;
         }
 
         [Authorize(Roles = "Admin")]
