@@ -1,4 +1,6 @@
-﻿namespace DeskBookingSystem.Tests
+﻿using DeskBookingSystem.Dto;
+
+namespace DeskBookingSystem.Tests
 {
     public class LocationControllerTests
     {

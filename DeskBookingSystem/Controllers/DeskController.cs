@@ -1,4 +1,5 @@
 ﻿using DeskBookingSystem.Data;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

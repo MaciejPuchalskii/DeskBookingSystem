@@ -1,4 +1,5 @@
 ﻿using DeskBookingSystem.Data;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -103,7 +104,7 @@ namespace DeskBookingSystem.Controllers
             return Ok(desksDto);
         }
 
-        [HttpGet("{locationId}/GetDesks?Status={status}")]
+        [HttpGet("{locationId}/GetDesksByStatus")]
         public IActionResult GetDesksByAvailability(int locationId, DateTime startDate, DateTime endDate, bool desksStatus)
         {
             var location = _context.Locations.Find(locationId);
