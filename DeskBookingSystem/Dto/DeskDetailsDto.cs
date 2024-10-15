@@ -1,4 +1,4 @@
-﻿namespace DeskBookingSystem.Models
+﻿namespace DeskBookingSystem.Dto
 {
     public class DeskDetailsDto
     {
