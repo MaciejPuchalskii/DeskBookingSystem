@@ -1,10 +1,8 @@
 ﻿using DeskBookingSystem.Data;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Models;
+using DeskBookingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace DeskBookingSystem.Controllers
 {
@@ -13,85 +11,66 @@ namespace DeskBookingSystem.Controllers
     public class AuthController : ControllerBase
     {
         private readonly BookingContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public AuthController(BookingContext context, IConfiguration configuration)
+        public AuthController(BookingContext context, IUserService userService)
         {
             _context = context;
-            _configuration = configuration;
+            _userService = userService;
         }
 
         [HttpPost("register")]
-        public ActionResult<User> Register(RegisterDto requestUser)
+        public ActionResult<User> Register(RegisterCommandDto registerCommandDto)
         {
-            if (_context.Users.Any(u => u.UserName == requestUser.UserName))
+            try
             {
-                return BadRequest("User with this username already exists.");
+                var user = _userService.Register(registerCommandDto);
+                return Ok(user);
             }
-
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(requestUser.Password);
-
-            var newUser = new User()
+            catch (Exception ex)
             {
-                Name = requestUser.Name,
-                Surname = requestUser.Surname,
-                UserName = requestUser.UserName,
-                Email = requestUser.Email,
-                PasswordHash = passwordHash,
-                IsAdmin = requestUser.IsAdmin,
-                Reservations = new List<Reservation>()
-            };
-            _context.Users.Add(newUser);
-            _context.SaveChanges();
-
-            var userDto = new UserDto()
-            {
-                Id = newUser.Id,
-                Name = newUser.Name,
-                Surname = newUser.Surname,
-                UserName = newUser.UserName,
-                Email = newUser.Email,
-                Reservations = new List<ReservationDto>()
-            };
-
-            return Ok(userDto);
+                if (ex.Message == "User with this username already exists.")
+                {
+                    return Conflict(ex.Message);
+                }
+                else if (ex.Message == "Username or password cannot be empty.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
+            }
         }
 
         [HttpPost("login")]
-        public ActionResult<User> Login(LoginDto loginUser)
+        public ActionResult<User> Login(LoginCommandDto loginUser)
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserName == loginUser.UserName);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginUser.Password, user.PasswordHash))
+            try
             {
-                return BadRequest("Invalid username or password.");
+                var user = _userService.Login(loginUser);
+                return Ok(user);
             }
-
-            string token = CreateToken(user);
-
-            return Ok(token);
-        }
-
-        private string CreateToken(User user)
-        {
-            var claims = new List<Claim>()
+            catch (Exception ex)
             {
-                new Claim(ClaimTypes.Name,user.UserName),
-                new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Jwt:Token").Value!));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: creds
-                );
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            return jwt;
+                if (ex.Message == "Username or password cannot be empty.")
+                {
+                    return Conflict(ex.Message);
+                }
+                else if (ex.Message == "User with this username doesn't exist.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Invalid username or password.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
+            }
         }
     }
 }
