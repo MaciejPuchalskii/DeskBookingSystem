@@ -1,5 +1,6 @@
 ﻿using DeskBookingSystem.Data;
 using DeskBookingSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -15,6 +16,94 @@ namespace DeskBookingSystem.Controllers
         public DeskController(BookingContext context)
         {
             _context = context;
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("add")]
+        public IActionResult AddDesk(int locationId, bool status)
+        {
+            var location = _context.Locations.Find(locationId);
+            if (location == null)
+            {
+                return BadRequest("Location not found.");
+            }
+
+            _context.Desks.Add(new Desk() { IsAvailable = status, LocationId = locationId });
+            _context.SaveChanges();
+
+            return Ok($"Desks added successfully in {location.Name}.");
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("addMultiple")]
+        public IActionResult AddDesks(int locationId, int amount, bool status)
+        {
+            var location = _context.Locations.Find(locationId);
+            if (location == null)
+            {
+                return BadRequest("Location not found.");
+            }
+
+            var desks = new List<Desk>();
+            for (int i = 0; i < amount; i++)
+            {
+                desks.Add(new Desk
+                {
+                    IsAvailable = status,
+                    LocationId = locationId
+                });
+            }
+
+            _context.Desks.AddRange(desks);
+            _context.SaveChanges();
+
+            return Ok($"{amount} desks added successfully in {location.Name}.");
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{deskId}/remove")]
+        public IActionResult RemoveDesk(int deskId)
+        {
+            var desk = _context.Desks.Include(d => d.Reservations).FirstOrDefault(d => d.Id == deskId);
+
+            if (desk == null)
+            {
+                return NotFound("Desk not found.");
+            }
+            if (desk.Reservations.Any())
+            {
+                return BadRequest("Cannot remove desk with existing reservations.");
+            }
+            _context.Desks.Remove(desk);
+            _context.SaveChanges();
+
+            return Ok("Desk removed successfully.");
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{deskId}/disable")]
+        public IActionResult SetDeskUnavailable(int deskId)
+        {
+            var desk = _context.Desks.Include(d => d.Reservations).FirstOrDefault(d => d.Id == deskId);
+            if (desk == null)
+            {
+                return NotFound("Desk not found.");
+            }
+
+            if (desk.Reservations.Any())
+            {
+                return BadRequest("Cannot disable a desk with existing reservations.");
+            }
+
+            if (!desk.IsAvailable)
+            {
+                return BadRequest("This desk is already disabled.");
+            }
+
+            desk.IsAvailable = false;
+            _context.SaveChanges();
+
+            return Ok("Desk disabled successfully.");
         }
 
         [HttpPost("{deskId}/reserve")]
@@ -61,86 +150,6 @@ namespace DeskBookingSystem.Controllers
             return Ok("Desk reserved successfully.");
         }
 
-        [HttpGet("{locationId}/desks")]
-        public IActionResult GetDesks(int locationId, bool? isAvailable = null)
-        {
-            var location = _context.Locations.Find(locationId);
-            if (location == null)
-            {
-                return NotFound("Location not found.");
-            }
-
-            var allDesksInLocation = _context.Desks.Where(d => d.LocationId == locationId);
-
-            if (isAvailable != null)
-            {
-                allDesksInLocation = allDesksInLocation.Where(d => d.IsAvailable == isAvailable);
-            }
-
-            var desks = allDesksInLocation.ToList();
-
-            var desksDto = desks.Select(d => new DeskDetailsDto()
-            {
-                Id = d.Id,
-                IsAvailable = d.IsAvailable,
-                LocationName = d.Location.Name,
-                Reservations = d.Reservations.Select(r => new ReservationDto()
-                {
-                    Id = r.Id,
-                    BookingDate = r.BookingDate,
-                    ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
-                    UserId = r.UserId
-                }).ToList()
-            }).ToList();
-
-            if (!desks.Any())
-            {
-                return Ok("No desks found in this location.");
-            }
-
-            return Ok(desksDto);
-        }
-
-        [HttpGet("{locationId}/desks")]
-        public IActionResult GetDesksByAvailability(int locationId, DateTime startDate, DateTime endDate, bool desksStatus)
-        {
-            var location = _context.Locations.Find(locationId);
-            if (location == null)
-            {
-                return NotFound("Location not found.");
-            }
-
-            var allDesksInLocation = _context.Desks.Include(d => d.Reservations).Where(d => d.LocationId == locationId).ToList();
-
-            var availableDesks = allDesksInLocation.Where(d => !d.Reservations.Any(r => (r.ReservationDate < endDate && r.ReservationDate.AddDays(r.HowManyDays) > startDate))).ToList();
-            if (!desksStatus)
-            {
-                availableDesks = allDesksInLocation.Except(availableDesks).ToList();
-            }
-            var desksDto = availableDesks.Select(d => new DeskDetailsDto()
-            {
-                Id = d.Id,
-                IsAvailable = d.IsAvailable,
-                LocationName = d.Location.Name,
-                Reservations = d.Reservations.Select(r => new ReservationDto()
-                {
-                    Id = r.Id,
-                    BookingDate = r.BookingDate,
-                    ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
-                    UserId = r.UserId
-                }).ToList()
-            }).ToList();
-
-            if (!desksDto.Any())
-            {
-                return Ok("No desks available in this location during the specified time period.");
-            }
-
-            return Ok(desksDto);
-        }
-
         [HttpGet("{deskId}/details")]
         public IActionResult GetDeskDetails(int deskId)
         {
@@ -171,66 +180,6 @@ namespace DeskBookingSystem.Controllers
             };
 
             return Ok(deskDetailsDto);
-        }
-
-        [HttpPut("{deskId}/changeReservationDate")]
-        public IActionResult ChangeReservationDate(int deskId, int userId, int reservationId, DateTime newDate)
-        {
-            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == reservationId && r.DeskId == deskId && r.UserId == userId);
-            if (reservation == null)
-            {
-                return NotFound("Reservation not found.");
-            }
-
-            if ((reservation.ReservationDate - DateTime.Now).TotalHours <= 24)
-            {
-                return BadRequest("You can't change the reservation less than 24 hours before the reservation.");
-            }
-
-            bool isDeskReserved = _context.Reservations.Any(r => r.DeskId == deskId &&
-               (r.ReservationDate < newDate.AddDays(reservation.HowManyDays) &&
-                r.ReservationDate.AddDays(r.HowManyDays) > newDate));
-
-            if (isDeskReserved)
-            {
-                return BadRequest("The new desk is not available for the selected time period.");
-            }
-
-            reservation.ReservationDate = newDate;
-            _context.SaveChanges();
-
-            return Ok("Reservation changed successfully.");
-        }
-
-        [HttpPut("{deskId}/changeReservationDesk")]
-        public IActionResult ChangeReservationDesk(int reservationId, int newDeskId)
-        {
-            var reservation = _context.Reservations.Include(r => r.Desk).FirstOrDefault(r => r.Id == reservationId);
-            if (reservation == null)
-            {
-                return NotFound("Reservation not found.");
-            }
-
-            if ((reservation.ReservationDate - DateTime.Now).TotalHours <= 24)
-            {
-                return BadRequest("You can't change the desk less than 24 hours before the reservation.");
-            }
-
-            var newDesk = _context.Desks
-                .FirstOrDefault(d => d.Id == newDeskId && d.IsAvailable &&
-                    !_context.Reservations.Any(r => r.DeskId == newDeskId &&
-                        (r.ReservationDate < reservation.ReservationDate.AddDays(reservation.HowManyDays) &&
-                         r.ReservationDate.AddDays(r.HowManyDays) > reservation.ReservationDate)));
-
-            if (newDesk == null)
-            {
-                return BadRequest("The new desk is not available for the selected time period.");
-            }
-
-            reservation.DeskId = newDeskId;
-            _context.SaveChanges();
-
-            return Ok("Desk changed successfully.");
         }
     }
 }
