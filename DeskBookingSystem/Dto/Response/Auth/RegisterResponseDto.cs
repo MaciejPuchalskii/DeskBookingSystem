@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace DeskBookingSystem.Dto
+﻿namespace DeskBookingSystem.Dto
 {
     public class RegisterResponseDto
     {
