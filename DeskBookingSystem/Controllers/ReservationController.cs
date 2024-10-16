@@ -25,7 +25,7 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Reservation not found.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "You can't change the reservation less than 24 hours before the reservation.")
                 {

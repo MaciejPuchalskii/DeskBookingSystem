@@ -27,7 +27,7 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Location name cannot be empty.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "Location with this name already exists.")
                 {
@@ -53,7 +53,7 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Location not found.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "Cannot remove location with assigned desks.")
                 {
