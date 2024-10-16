@@ -1,4 +1,5 @@
-﻿using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Dto;
+using DeskBookingSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeskBookingSystem.Data

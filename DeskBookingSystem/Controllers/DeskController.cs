@@ -1,8 +1,7 @@
-﻿using DeskBookingSystem.Data;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Dto;
+using DeskBookingSystem.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace DeskBookingSystem.Controllers
 {
@@ -10,227 +9,157 @@ namespace DeskBookingSystem.Controllers
     [Route("api/[controller]")]
     public class DeskController : Controller
     {
-        private readonly BookingContext _context;
+        private readonly IDeskService _deskService;
+        private readonly ILocationService _locationService;
 
-        public DeskController(BookingContext context)
+        public DeskController(IDeskService deskService, ILocationService locationService)
         {
-            _context = context;
+            _deskService = deskService;
+            _locationService = locationService;
         }
 
-        [HttpPost("{deskId}/reserve")]
-        public IActionResult ReserveDesk(int deskId, int userId, DateTime reservationDate, int howManyDays)
+        [Authorize(Roles = "Admin")]
+        [HttpPost("/desks")]
+        public ActionResult<AddDeskResponseDto> AddDesk(AddDeskCommandDto addDeskCommandDto)
         {
-            var desk = _context.Desks.Include(d => d.Reservations).FirstOrDefault(d => d.Id == deskId);
-            if (desk == null)
+            try
             {
-                return NotFound("Desk not found.");
+                _locationService.ExistLocation(addDeskCommandDto.LocationId);
+
+                var desk = _deskService.Add(addDeskCommandDto);
+                return Ok(desk);
             }
-
-            if (!desk.IsAvailable)
+            catch (Exception ex)
             {
-                return BadRequest("Desk is not available for reservation.");
-            }
-            var ifDeskHasAnyConflictingReservations = _context.Reservations.Any(r => r.DeskId == deskId &&
-                  (r.ReservationDate < reservationDate.AddDays(howManyDays) &&
-                   r.ReservationDate.AddDays(r.HowManyDays) > reservationDate));
-
-            if (ifDeskHasAnyConflictingReservations)
-            {
-                return BadRequest("This desk has already been reserved for the selected time period.");
-            }
-
-            if (howManyDays > 7)
-            {
-                return BadRequest("Reservation cannot be longer than 7 days.");
-            }
-
-            if (reservationDate.Date < DateTime.Now.Date)
-            {
-                return BadRequest("Reservation date cannot be in the past.");
-            }
-
-            _context.Reservations.Add(new Reservation()
-            {
-                DeskId = deskId,
-                UserId = userId,
-                BookingDate = DateTime.Now,
-                ReservationDate = reservationDate,
-                HowManyDays = howManyDays
-            });
-            _context.SaveChanges();
-            return Ok("Desk reserved successfully.");
-        }
-
-        [HttpGet("{locationId}/desks")]
-        public IActionResult GetDesks(int locationId, bool? isAvailable = null)
-        {
-            var location = _context.Locations.Find(locationId);
-            if (location == null)
-            {
-                return NotFound("Location not found.");
-            }
-
-            var allDesksInLocation = _context.Desks.Where(d => d.LocationId == locationId);
-
-            if (isAvailable != null)
-            {
-                allDesksInLocation = allDesksInLocation.Where(d => d.IsAvailable == isAvailable);
-            }
-
-            var desks = allDesksInLocation.ToList();
-
-            var desksDto = desks.Select(d => new DeskDetailsDto()
-            {
-                Id = d.Id,
-                IsAvailable = d.IsAvailable,
-                LocationName = d.Location.Name,
-                Reservations = d.Reservations.Select(r => new ReservationDto()
+                if (ex.Message == "Location not found.")
                 {
-                    Id = r.Id,
-                    BookingDate = r.BookingDate,
-                    ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
-                    UserId = r.UserId
-                }).ToList()
-            }).ToList();
-
-            if (!desks.Any())
-            {
-                return Ok("No desks found in this location.");
-            }
-
-            return Ok(desksDto);
-        }
-
-        [HttpGet("{locationId}/desks")]
-        public IActionResult GetDesksByAvailability(int locationId, DateTime startDate, DateTime endDate, bool desksStatus)
-        {
-            var location = _context.Locations.Find(locationId);
-            if (location == null)
-            {
-                return NotFound("Location not found.");
-            }
-
-            var allDesksInLocation = _context.Desks.Include(d => d.Reservations).Where(d => d.LocationId == locationId).ToList();
-
-            var availableDesks = allDesksInLocation.Where(d => !d.Reservations.Any(r => (r.ReservationDate < endDate && r.ReservationDate.AddDays(r.HowManyDays) > startDate))).ToList();
-            if (!desksStatus)
-            {
-                availableDesks = allDesksInLocation.Except(availableDesks).ToList();
-            }
-            var desksDto = availableDesks.Select(d => new DeskDetailsDto()
-            {
-                Id = d.Id,
-                IsAvailable = d.IsAvailable,
-                LocationName = d.Location.Name,
-                Reservations = d.Reservations.Select(r => new ReservationDto()
+                    return BadRequest(ex.Message);
+                }
+                else
                 {
-                    Id = r.Id,
-                    BookingDate = r.BookingDate,
-                    ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
-                    UserId = r.UserId
-                }).ToList()
-            }).ToList();
-
-            if (!desksDto.Any())
-            {
-                return Ok("No desks available in this location during the specified time period.");
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
-
-            return Ok(desksDto);
         }
 
-        [HttpGet("{deskId}/details")]
-        public IActionResult GetDeskDetails(int deskId)
+        [Authorize(Roles = "Admin")]
+        [HttpPost("multiple")]
+        public ActionResult<AddMultipleDeskResponseDto> AddDesks(AddMultipleDeskCommandDto addMutlipleDeskCommandDto)
         {
-            var desk = _context.Desks.Include(d => d.Location)
-                                     .Include(d => d.Reservations)
-                                     .FirstOrDefault(d => d.Id == deskId);
-            if (desk == null)
+            try
             {
-                return NotFound("Desk not found.");
-            }
+                _locationService.ExistLocation(addMutlipleDeskCommandDto.LocationId);
 
-            var isAdmin = User?.IsInRole("Admin") ?? false;
-
-            var deskDetailsDto = new DeskDetailsDto
-            {
-                Id = desk.Id,
-                IsAvailable = desk.IsAvailable,
-                LocationName = desk.Location.Name,
-                Reservations = isAdmin ? desk.Reservations.Select(r => new ReservationDto
+                var responseDtos = new List<AddDeskResponseDto>();
+                for (int i = 0; i < addMutlipleDeskCommandDto.Amount; i++)
                 {
-                    Id = r.Id,
-                    BookingDate = r.BookingDate,
-                    ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
-                    UserId = r.UserId
-                }).ToList()
-                : new List<ReservationDto>()
-            };
+                    responseDtos.Add(_deskService.Add(new AddDeskCommandDto
+                    {
+                        LocationId = addMutlipleDeskCommandDto.LocationId,
+                        IsAvailable = addMutlipleDeskCommandDto.IsAvailable
+                    }));
+                }
 
-            return Ok(deskDetailsDto);
+                var response = new AddMultipleDeskResponseDto()
+                {
+                    AddedDesks = responseDtos,
+                    TotalAdded = responseDtos.Count
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "Location not found.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
+            }
         }
 
-        [HttpPut("{deskId}/changeReservationDate")]
-        public IActionResult ChangeReservationDate(int deskId, int userId, int reservationId, DateTime newDate)
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("/{deskId}")]
+        public ActionResult<RemoveDeskResponseDto> RemoveDesk( int deskId)
         {
-            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == reservationId && r.DeskId == deskId && r.UserId == userId);
-            if (reservation == null)
+            try
             {
-                return NotFound("Reservation not found.");
+                var response = _deskService.Remove(new RemoveDeskCommandDto() { Id = deskId });
+                return Ok(response);
             }
-
-            if ((reservation.ReservationDate - DateTime.Now).TotalHours <= 24)
+            catch (Exception ex)
             {
-                return BadRequest("You can't change the reservation less than 24 hours before the reservation.");
+                if (ex.Message == "Desk not found.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Cannot remove desk with existing reservations.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Failed to remove desk.")
+                {
+                    return StatusCode(500, ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
-
-            bool isDeskReserved = _context.Reservations.Any(r => r.DeskId == deskId &&
-               (r.ReservationDate < newDate.AddDays(reservation.HowManyDays) &&
-                r.ReservationDate.AddDays(r.HowManyDays) > newDate));
-
-            if (isDeskReserved)
-            {
-                return BadRequest("The new desk is not available for the selected time period.");
-            }
-
-            reservation.ReservationDate = newDate;
-            _context.SaveChanges();
-
-            return Ok("Reservation changed successfully.");
         }
 
-        [HttpPut("{deskId}/changeReservationDesk")]
-        public IActionResult ChangeReservationDesk(int reservationId, int newDeskId)
+        [Authorize(Roles = "Admin")]
+        [HttpPut("")]
+        public ActionResult<ChangeDeskAvailabiltyResponseDto> ChangeDeskAvailability(ChangeDeskAvailabiltyCommandDto setDeskCommandDto)
         {
-            var reservation = _context.Reservations.Include(r => r.Desk).FirstOrDefault(r => r.Id == reservationId);
-            if (reservation == null)
+            try
             {
-                return NotFound("Reservation not found.");
+                var desk = _deskService.ChangeDeskAvailability(setDeskCommandDto);
+                return Ok(desk);
             }
-
-            if ((reservation.ReservationDate - DateTime.Now).TotalHours <= 24)
+            catch (Exception ex)
             {
-                return BadRequest("You can't change the desk less than 24 hours before the reservation.");
+                if (ex.Message == "Desk not found.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Cannot disable a desk with existing reservations.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
+        }
 
-            var newDesk = _context.Desks
-                .FirstOrDefault(d => d.Id == newDeskId && d.IsAvailable &&
-                    !_context.Reservations.Any(r => r.DeskId == newDeskId &&
-                        (r.ReservationDate < reservation.ReservationDate.AddDays(reservation.HowManyDays) &&
-                         r.ReservationDate.AddDays(r.HowManyDays) > reservation.ReservationDate)));
-
-            if (newDesk == null)
+        [HttpGet("/{deskId}/details")]
+        public ActionResult<GetDeskDetailsResponseDto> GetDeskDetails(int deskId)
+        {
+            try
             {
-                return BadRequest("The new desk is not available for the selected time period.");
+                var deskDetailsDto = new GetDeskDetailsQueryDto
+                {
+                    Id = deskId
+                };
+                var details = _deskService.GetDeskDetails(deskDetailsDto);
+                return Ok(details);
             }
-
-            reservation.DeskId = newDeskId;
-            _context.SaveChanges();
-
-            return Ok("Desk changed successfully.");
+            catch (Exception ex)
+            {
+                if (ex.Message == "Desk not found.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
+            }
         }
     }
 }

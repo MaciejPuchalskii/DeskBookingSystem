@@ -1,3 +1,4 @@
+using DeskBookingSystem.Configurations;
 using DeskBookingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +16,8 @@ namespace DeskBookingSystem
             // Add services to the container.
             builder.Services.AddDbContext<BookingContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddControllers();
+            builder.Services.ConfigureServices();
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -68,10 +71,7 @@ namespace DeskBookingSystem
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "DeskBookingSystem API v1");
-                });
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
