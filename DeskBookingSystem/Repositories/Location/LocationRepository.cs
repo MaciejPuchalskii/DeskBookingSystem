@@ -32,7 +32,7 @@ namespace DeskBookingSystem.Repositories
 
         public Location GetById(int id)
         {
-            return _context.Locations.Include(l => l.Desks).FirstOrDefault(l => l.Id == id);
+            return _context.Locations.Include(l => l.Desks).ThenInclude(d=>d.Reservations).FirstOrDefault(l => l.Id == id);
         }
 
         public bool Remove(Location location)

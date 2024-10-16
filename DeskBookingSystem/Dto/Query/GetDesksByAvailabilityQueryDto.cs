@@ -8,6 +8,5 @@
 
         public DateTime EndDate { get; set; }
 
-        public bool DesksStatus { get; set; }
     }
 }

@@ -30,8 +30,17 @@ namespace DeskBookingSystem.Repositories
 
         public void Update(Reservation reservation)
         {
-            _context.Reservations.Update(reservation);
-            _context.SaveChanges();
+            var existingReservation = GetById(reservation.DeskId);
+
+            if (existingReservation != null)
+            {
+                existingReservation.DeskId = reservation.DeskId;
+                existingReservation.UserId = reservation.UserId;
+                existingReservation.ReservationDate = reservation.ReservationDate;
+                existingReservation.HowManyDays = reservation.HowManyDays;
+
+                _context.SaveChanges();
+            }
         }
 
         public void UpdateReservation(Reservation reservation, int howManyDays, DateTime newDate)

@@ -63,7 +63,7 @@ namespace DeskBookingSystem.Services
             {
                 throw new Exception("Desk not found.");
             }
-            if (desk.Reservations.Any())
+            if (desk.Reservations.Any() && !changeDeskAvailabiltyCommandDto.IsAvailable)
             {
                 throw new Exception("Cannot disable a desk with existing reservations.");
             }

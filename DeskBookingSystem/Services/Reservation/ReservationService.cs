@@ -32,9 +32,9 @@ namespace DeskBookingSystem.Services
 
             var reservationsOfThisDesk = _reservationRepository.GetAllReservationsByDeskId(reservation.DeskId);
 
-            bool isDeskReserved = reservationsOfThisDesk.Any(r => r.DeskId == reservation.DeskId &&
-               (r.ReservationDate < changeReservationDateCommandDto.NewDate.AddDays(reservation.HowManyDays) &&
-                r.ReservationDate.AddDays(r.HowManyDays) > changeReservationDateCommandDto.NewDate));
+            bool isDeskReserved = reservationsOfThisDesk.Any(r =>
+     (changeReservationDateCommandDto.NewDate < r.BookingDate.AddDays(r.HowManyDays) &&
+      changeReservationDateCommandDto.NewDate.AddDays(reservation.HowManyDays) > r.BookingDate));
 
             if (isDeskReserved)
             {
@@ -133,6 +133,7 @@ namespace DeskBookingSystem.Services
 
             return new ReserveDeskResponseDto()
             {
+                ReservationId = reservation.Id,
                 DeskId = reservation.DeskId,
                 EndDate = reservation.ReservationDate.AddDays(reservation.HowManyDays),
                 StartDate = reservation.ReservationDate

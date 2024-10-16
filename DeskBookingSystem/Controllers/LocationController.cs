@@ -42,11 +42,11 @@ namespace DeskBookingSystem.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("/locations/{locationId}/remove")]
-        public ActionResult<RemoveLocationResponseDto> RemoveLocation(RemoveLocationCommandDto removeLocationCommandDto)
+        public ActionResult<RemoveLocationResponseDto> RemoveLocation(int locationId)
         {
             try
             {
-                var response = _locationService.Remove(removeLocationCommandDto);
+                var response = _locationService.Remove(new RemoveLocationCommandDto() { Id = locationId });
                 return Ok(response);
             }
             catch (Exception ex)
@@ -71,11 +71,16 @@ namespace DeskBookingSystem.Controllers
         }
 
         [HttpGet("/locations/{locationId}/desks")]
-        public ActionResult<GetDesksFromLocationResponseDto> GetDesks([FromQuery] GetDesksFromLocationQueryDto getDesksFromLocationQueryDto)
+        public ActionResult<GetDesksFromLocationResponseDto> GetDesks(int locationId, bool? areAvailable = null)
         {
             try
             {
-                var desks = _locationService.GetDesks(getDesksFromLocationQueryDto);
+                var queryDto = new GetDesksFromLocationQueryDto
+                {
+                    LocationId = locationId,
+                    areAvailable = areAvailable
+                };
+                var desks = _locationService.GetDesks(queryDto);
                 return Ok(desks);
             }
             catch (Exception ex)
@@ -96,11 +101,17 @@ namespace DeskBookingSystem.Controllers
         }
 
         [HttpGet("/locations/{locationId}/desks/status")]
-        public ActionResult<GetDesksByAvailabilityResponseDto> GetDesksByAvailability([FromQuery] GetDesksByAvailabilityQueryDto getDesksByAvailabilityQueryDto)
+        public ActionResult<GetDesksByAvailabilityResponseDto> GetDesksByAvailability(int locationId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             try
             {
-                var response = _locationService.GetDesksByAvailability(getDesksByAvailabilityQueryDto);
+                var queryDto = new GetDesksByAvailabilityQueryDto
+                {
+                    LocationId = locationId,
+                    StartDate = startDate,
+                    EndDate = endDate,
+                };
+                var response = _locationService.GetDesksByAvailability(queryDto);
                 return Ok(response);
             }
             catch (Exception ex)

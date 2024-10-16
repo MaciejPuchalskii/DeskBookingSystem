@@ -37,7 +37,8 @@ namespace DeskBookingSystem.Services
                 PasswordHash = passwordHash,
                 Name = registerCommandDto.Name,
                 Surname = registerCommandDto.Surname,
-                Email = registerCommandDto.Email
+                Email = registerCommandDto.Email,
+                IsAdmin = registerCommandDto.IsAdmin
             };
 
             _userRepository.Add(newUser);
@@ -48,7 +49,7 @@ namespace DeskBookingSystem.Services
                 Email = newUser.Email,
                 UserName = newUser.UserName,
                 Name = newUser.Name,
-                Surname = newUser.Surname,
+                Surname = newUser.Surname
             };
         }
 

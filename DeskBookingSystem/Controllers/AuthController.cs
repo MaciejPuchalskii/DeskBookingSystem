@@ -1,6 +1,4 @@
-﻿using DeskBookingSystem.Data;
-using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Dto;
 using DeskBookingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,11 +56,11 @@ namespace DeskBookingSystem.Controllers
                 }
                 else if (ex.Message == "User with this username doesn't exist.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "Invalid username or password.")
                 {
-                    return BadRequest(ex.Message);
+                    return Unauthorized(ex.Message);
                 }
                 else
                 {

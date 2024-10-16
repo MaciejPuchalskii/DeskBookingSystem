@@ -1,7 +1,9 @@
-﻿namespace DeskBookingSystem.Dto
+﻿using DeskBookingSystem.Dto.Response.Location;
+
+namespace DeskBookingSystem.Dto
 {
     public class GetDesksByAvailabilityResponseDto
     {
-        public List<DeskDetailsDto> Desks { get; set; } = new List<DeskDetailsDto>();
+        public List<GetDeskByAvailabilityResponseDto> Desks { get; set; } = new List<GetDeskByAvailabilityResponseDto>();
     }
 }

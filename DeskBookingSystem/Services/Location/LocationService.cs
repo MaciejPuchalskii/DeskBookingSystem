@@ -1,4 +1,5 @@
 ﻿using DeskBookingSystem.Dto;
+using DeskBookingSystem.Dto.Response.Location;
 using DeskBookingSystem.Models;
 using DeskBookingSystem.Repositories;
 
@@ -99,7 +100,7 @@ namespace DeskBookingSystem.Services
             {
                 throw new Exception("No desks found in this location.");
             }
-            var allAvailableDesksInLocation = location.Desks.Where(d => !d.Reservations.Any(r => (r.ReservationDate < getDesksByAvailabilityQueryDto.EndDate && r.ReservationDate.AddDays(r.HowManyDays) > getDesksByAvailabilityQueryDto.StartDate)) && d.IsAvailable == true).ToList();
+            var allAvailableDesksInLocation = location.Desks.Where(d => !d.Reservations.Any(r => (r.ReservationDate < getDesksByAvailabilityQueryDto.EndDate && r.ReservationDate.AddDays(r.HowManyDays) > getDesksByAvailabilityQueryDto.StartDate)) /*&& d.IsAvailable == true*/).ToList();
 
             if (!allAvailableDesksInLocation.Any())
             {
@@ -108,9 +109,10 @@ namespace DeskBookingSystem.Services
 
             var desksDto = new GetDesksByAvailabilityResponseDto()
             {
-                Desks = allAvailableDesksInLocation.Select(d => new DeskDetailsDto()
+                Desks = allAvailableDesksInLocation.Select(d => new GetDeskByAvailabilityResponseDto()
                 {
                     Id = d.Id,
+                    LocationName = location.Name,
                 }).ToList()
             };
 

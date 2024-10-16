@@ -13,7 +13,7 @@ namespace DeskBookingSystem.Controllers
             _reservationService = reservationService;
         }
 
-        [HttpPut("/reservations/{reservationId}/changeReservationDate")]
+        [HttpPut("/changeDate")]
         public ActionResult<ChangeReservationDateResponseDto> ChangeReservationDate(ChangeReservationDateCommandDto changeReservationDateCommandDto)
         {
             try
@@ -46,7 +46,7 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpPut("{reservationId}/changeDesk")]
+        [HttpPut("/changeDesk")]
         public ActionResult<ChangeReservationDeskResponseDto> ChangeReservationDesk(ChangeReservationDeskCommandDto changeReservationDeskCommandDto)
         {
             try
@@ -75,11 +75,12 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpPost("/reserveDesk{deskId}")]
-        public ActionResult<ReserveDeskResponseDto> ReserveDesk(ReserveDeskCommandDto reserveDeskCommandDto)
+        [HttpPost("/reserveDesk/{deskId}")]
+        public ActionResult<ReserveDeskResponseDto> ReserveDesk(int deskId, [FromBody] ReserveDeskCommandDto reserveDeskCommandDto)
         {
             try
             {
+                reserveDeskCommandDto.DeskId = deskId;
                 var response = _reservationService.Reserve(reserveDeskCommandDto);
                 return Ok(response);
             }

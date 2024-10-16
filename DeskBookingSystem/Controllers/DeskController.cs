@@ -43,7 +43,7 @@ namespace DeskBookingSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost("/desks/multiple")]
+        [HttpPost("multiple")]
         public ActionResult<AddMultipleDeskResponseDto> AddDesks(AddMultipleDeskCommandDto addMutlipleDeskCommandDto)
         {
             try
@@ -82,13 +82,12 @@ namespace DeskBookingSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("/desks/{deskId}/remove")]
-        public ActionResult<RemoveDeskResponseDto> RemoveDesk(RemoveDeskCommandDto removeDeskCommandDto)
-
+        [HttpDelete("/{deskId}")]
+        public ActionResult<RemoveDeskResponseDto> RemoveDesk( int deskId)
         {
             try
             {
-                var response = _deskService.Remove(removeDeskCommandDto);
+                var response = _deskService.Remove(new RemoveDeskCommandDto() { Id = deskId });
                 return Ok(response);
             }
             catch (Exception ex)
@@ -113,7 +112,7 @@ namespace DeskBookingSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPut("/desks/{deskId}/disable")]
+        [HttpPut("")]
         public ActionResult<ChangeDeskAvailabiltyResponseDto> ChangeDeskAvailability(ChangeDeskAvailabiltyCommandDto setDeskCommandDto)
         {
             try
@@ -138,7 +137,7 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpGet("/desks/{deskId}/details")]
+        [HttpGet("/{deskId}/details")]
         public ActionResult<GetDeskDetailsResponseDto> GetDeskDetails(int deskId)
         {
             try
