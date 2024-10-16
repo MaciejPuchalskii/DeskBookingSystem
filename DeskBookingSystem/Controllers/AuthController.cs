@@ -10,17 +10,15 @@ namespace DeskBookingSystem.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly BookingContext _context;
         private readonly IUserService _userService;
 
-        public AuthController(BookingContext context, IUserService userService)
+        public AuthController(IUserService userService)
         {
-            _context = context;
             _userService = userService;
         }
 
         [HttpPost("register")]
-        public ActionResult<User> Register(RegisterCommandDto registerCommandDto)
+        public ActionResult<RegisterResponseDto> Register(RegisterCommandDto registerCommandDto)
         {
             try
             {
@@ -45,7 +43,7 @@ namespace DeskBookingSystem.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<User> Login(LoginCommandDto loginUser)
+        public ActionResult<LoginResponseDto> Login(LoginCommandDto loginUser)
         {
             try
             {

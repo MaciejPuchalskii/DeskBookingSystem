@@ -1,76 +1,115 @@
-﻿using DeskBookingSystem.Data;
+﻿using DeskBookingSystem.Dto;
+using DeskBookingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DeskBookingSystem.Controllers
 {
     public class ReservationController : Controller
     {
-        private readonly BookingContext _context;
+        private readonly IReservationService _reservationService;
 
-        public ReservationController(BookingContext context)
+        public ReservationController(IReservationService reservationService)
         {
-            _context = context;
+            _reservationService = reservationService;
         }
 
-        [HttpPut("{reservationId}/changeReservationDate")]
-        public IActionResult ChangeReservationDate(int deskId, int userId, int reservationId, DateTime newDate)
+        [HttpPut("/reservations/{reservationId}/changeReservationDate")]
+        public ActionResult<ChangeReservationDateResponseDto> ChangeReservationDate(ChangeReservationDateCommandDto changeReservationDateCommandDto)
         {
-            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == reservationId && r.DeskId == deskId && r.UserId == userId);
-            if (reservation == null)
+            try
             {
-                return NotFound("Reservation not found.");
+                var response = _reservationService.ChangeReservationDate(changeReservationDateCommandDto);
+                return Ok(response);
             }
-
-            if ((reservation.ReservationDate - DateTime.Now).TotalHours <= 24)
+            catch (Exception ex)
             {
-                return BadRequest("You can't change the reservation less than 24 hours before the reservation.");
+                if (ex.Message == "Reservation not found.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "You can't change the reservation less than 24 hours before the reservation.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "The new desk is not available for the selected time period.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Reservation cannot be longer than 7 days.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
-
-            bool isDeskReserved = _context.Reservations.Any(r => r.DeskId == deskId &&
-               (r.ReservationDate < newDate.AddDays(reservation.HowManyDays) &&
-                r.ReservationDate.AddDays(r.HowManyDays) > newDate));
-
-            if (isDeskReserved)
-            {
-                return BadRequest("The new desk is not available for the selected time period.");
-            }
-
-            reservation.ReservationDate = newDate;
-            _context.SaveChanges();
-
-            return Ok("Reservation changed successfully.");
         }
 
-        [HttpPut("{reservationId}/changeReservationDesk/{deskId}")]
-        public IActionResult ChangeReservationDesk(int reservationId, int newDeskId)
+        [HttpPut("{reservationId}/changeDesk")]
+        public ActionResult<ChangeReservationDeskResponseDto> ChangeReservationDesk(ChangeReservationDeskCommandDto changeReservationDeskCommandDto)
         {
-            var reservation = _context.Reservations.Include(r => r.Desk).FirstOrDefault(r => r.Id == reservationId);
-            if (reservation == null)
+            try
             {
-                return NotFound("Reservation not found.");
+                var response = _reservationService.ChangeReservationDesk(changeReservationDeskCommandDto);
+                return Ok(response);
             }
-
-            if ((reservation.ReservationDate - DateTime.Now).TotalHours <= 24)
+            catch (Exception ex)
             {
-                return BadRequest("You can't change the desk less than 24 hours before the reservation.");
+                if (ex.Message == "Reservation not found.")
+                {
+                    return NotFound(ex.Message);
+                }
+                else if (ex.Message == "You can't change the desk less than 24 hours before the reservation.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "The new desk is not available for the selected time period.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
+        }
 
-            var newDesk = _context.Desks
-                .FirstOrDefault(d => d.Id == newDeskId && d.IsAvailable &&
-                    !_context.Reservations.Any(r => r.DeskId == newDeskId &&
-                        (r.ReservationDate < reservation.ReservationDate.AddDays(reservation.HowManyDays) &&
-                         r.ReservationDate.AddDays(r.HowManyDays) > reservation.ReservationDate)));
-
-            if (newDesk == null)
+        [HttpPost("/reserveDesk{deskId}")]
+        public ActionResult<ReserveDeskResponseDto> ReserveDesk(ReserveDeskCommandDto reserveDeskCommandDto)
+        {
+            try
             {
-                return BadRequest("The new desk is not available for the selected time period.");
+                var response = _reservationService.Reserve(reserveDeskCommandDto);
+                return Ok(response);
             }
-
-            reservation.DeskId = newDeskId;
-            _context.SaveChanges();
-
-            return Ok("Desk changed successfully.");
+            catch (Exception ex)
+            {
+                if (ex.Message == "Desk not found.")
+                {
+                    return NotFound(ex.Message);
+                }
+                else if (ex.Message == "Desk is not available for reservation.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Reservation cannot be longer than 7 days.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Reservation date cannot be in the past.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "This desk has already been reserved for the selected time period.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
+            }
         }
     }
 }

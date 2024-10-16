@@ -1,146 +1,127 @@
-﻿using DeskBookingSystem.Data;
-using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Dto;
+using DeskBookingSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DeskBookingSystem.Controllers
 {
     public class LocationController : Controller
     {
-        private readonly BookingContext _context;
+        private readonly ILocationService _locationService;
 
-        public LocationController(BookingContext context)
+        public LocationController(ILocationService locationService)
         {
-            _context = context;
+            _locationService = locationService;
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost("addLocation")]
-        public IActionResult AddLocation(string locationName)
+        [HttpPost("/locations")]
+        public ActionResult<AddLocationResponseDto> AddLocation(AddLocationCommandDto addLocationCommandDto)
         {
-            if (string.IsNullOrEmpty(locationName))
+            try
             {
-                return BadRequest("Location name cannot be empty.");
+                var location = _locationService.Add(addLocationCommandDto);
+                return Ok(location);
             }
-
-            var existingLocation = _context.Locations.FirstOrDefault(l => l.Name == locationName);
-            if (existingLocation != null)
+            catch (Exception ex)
             {
-                return BadRequest("Location with this name already exists.");
+                if (ex.Message == "Location name cannot be empty.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Location with this name already exists.")
+                {
+                    return Conflict(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
-
-            var newLocation = new Location
-            {
-                Name = locationName
-            };
-
-            _context.Locations.Add(newLocation);
-            _context.SaveChanges();
-
-            return Ok($"Location '{locationName}' added successfully.");
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{locationId}/remove")]
-        public IActionResult RemoveLocation(int locationId)
+        [HttpDelete("/locations/{locationId}/remove")]
+        public ActionResult<RemoveLocationResponseDto> RemoveLocation(RemoveLocationCommandDto removeLocationCommandDto)
         {
-            var location = _context.Locations.Include(l => l.Desks).FirstOrDefault(l => l.Id == locationId);
-            if (location == null)
+            try
             {
-                return NotFound("Location not found.");
+                var response = _locationService.Remove(removeLocationCommandDto);
+                return Ok(response);
             }
-
-            if (location.Desks.Any())
+            catch (Exception ex)
             {
-                return BadRequest("Cannot remove location with assigned desks.");
+                if (ex.Message == "Location not found.")
+                {
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "Cannot remove location with assigned desks.")
+                {
+                    return Conflict(ex.Message);
+                }
+                else if (ex.Message == "Failed to remove location.")
+                {
+                    return Conflict(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
-
-            _context.Locations.Remove(location);
-            _context.SaveChanges();
-
-            return Ok($"Location '{location.Name}' removed successfully.");
         }
 
-        [HttpGet("{locationId}/GetDesks")]
-        public IActionResult GetDesks(int locationId, bool? isAvailable = null)
+        [HttpGet("/locations/{locationId}/desks")]
+        public ActionResult<GetDesksFromLocationResponseDto> GetDesks([FromQuery] GetDesksFromLocationQueryDto getDesksFromLocationQueryDto)
         {
-            var location = _context.Locations.Find(locationId);
-            if (location == null)
+            try
             {
-                return NotFound("Location not found.");
+                var desks = _locationService.GetDesks(getDesksFromLocationQueryDto);
+                return Ok(desks);
             }
-
-            var allDesksInLocation = _context.Desks.Where(d => d.LocationId == locationId);
-
-            if (isAvailable != null)
+            catch (Exception ex)
             {
-                allDesksInLocation = allDesksInLocation.Where(d => d.IsAvailable == isAvailable);
-            }
-
-            var desks = allDesksInLocation.ToList();
-
-            var desksDto = desks.Select(d => new DeskDetailsDto()
-            {
-                Id = d.Id,
-                IsAvailable = d.IsAvailable,
-                LocationName = d.Location.Name,
-                Reservations = d.Reservations.Select(r => new ReservationDto()
+                if (ex.Message == "Location not found.")
                 {
-                    Id = r.Id,
-                    BookingDate = r.BookingDate,
-                    ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
-                    UserId = r.UserId
-                }).ToList()
-            }).ToList();
-
-            if (!desks.Any())
-            {
-                return Ok("No desks found in this location.");
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "No desks found in this location.")
+                {
+                    return NotFound(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
-
-            return Ok(desksDto);
         }
 
-        [HttpGet("{locationId}/GetDesksByStatus")]
-        public IActionResult GetDesksByAvailability(int locationId, DateTime startDate, DateTime endDate, bool desksStatus)
+        [HttpGet("/locations/{locationId}/desks/status")]
+        public ActionResult<GetDesksByAvailabilityResponseDto> GetDesksByAvailability([FromQuery] GetDesksByAvailabilityQueryDto getDesksByAvailabilityQueryDto)
         {
-            var location = _context.Locations.Find(locationId);
-            if (location == null)
+            try
             {
-                return NotFound("Location not found.");
+                var response = _locationService.GetDesksByAvailability(getDesksByAvailabilityQueryDto);
+                return Ok(response);
             }
-
-            var allDesksInLocation = _context.Desks.Include(d => d.Reservations).Where(d => d.LocationId == locationId).ToList();
-
-            var availableDesks = allDesksInLocation.Where(d => !d.Reservations.Any(r => (r.ReservationDate < endDate && r.ReservationDate.AddDays(r.HowManyDays) > startDate))).ToList();
-            if (!desksStatus)
+            catch (Exception ex)
             {
-                availableDesks = allDesksInLocation.Except(availableDesks).ToList();
-            }
-            var desksDto = availableDesks.Select(d => new DeskDetailsDto()
-            {
-                Id = d.Id,
-                IsAvailable = d.IsAvailable,
-                LocationName = d.Location.Name,
-                Reservations = d.Reservations.Select(r => new ReservationDto()
+                if (ex.Message == "Location not found.")
                 {
-                    Id = r.Id,
-                    BookingDate = r.BookingDate,
-                    ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
-                    UserId = r.UserId
-                }).ToList()
-            }).ToList();
-
-            if (!desksDto.Any())
-            {
-                return Ok("No desks available in this location during the specified time period.");
+                    return BadRequest(ex.Message);
+                }
+                else if (ex.Message == "No desks found in this location.")
+                {
+                    return NotFound(ex.Message);
+                }
+                else if (ex.Message == "No desks available in this location during the specified time period.")
+                {
+                    return NotFound(ex.Message);
+                }
+                else
+                {
+                    return StatusCode(500, "An unexpected error occurred.");
+                }
             }
-
-            return Ok(desksDto);
         }
     }
 }
