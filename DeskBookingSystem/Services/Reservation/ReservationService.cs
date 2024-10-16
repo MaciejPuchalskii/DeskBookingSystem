@@ -99,7 +99,7 @@ namespace DeskBookingSystem.Services
                 throw new Exception("Desk not found.");
             }
 
-            if (!desk.IsAvailable)
+            if (!desk.IsOperational)
             {
                 throw new Exception("Desk is not available for reservation.");
             }

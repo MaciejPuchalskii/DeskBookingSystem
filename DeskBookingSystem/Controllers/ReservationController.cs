@@ -1,4 +1,5 @@
 ﻿using DeskBookingSystem.Dto;
+using DeskBookingSystem.Models;
 using DeskBookingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,19 +14,27 @@ namespace DeskBookingSystem.Controllers
             _reservationService = reservationService;
         }
 
-        [HttpPut("/changeDate")]
-        public ActionResult<ChangeReservationDateResponseDto> ChangeReservationDate(ChangeReservationDateCommandDto changeReservationDateCommandDto)
+        [HttpPut("/reservations/{reservationId}/date")]
+        public ActionResult<ChangeReservationDateResponseDto> ChangeReservationDate([FromRoute] int reservationId, int userId, DateTime newDate, int howManyDays)
         {
             try
             {
-                var response = _reservationService.ChangeReservationDate(changeReservationDateCommandDto);
+                var queryDto = new ChangeReservationDateCommandDto()
+                {
+                    ReservationId = reservationId,
+                    UserId = userId,
+                    NewDate = newDate,
+                    HowManyDays = howManyDays
+                };
+                var response = _reservationService.ChangeReservationDate(queryDto);
+
                 return Ok(response);
             }
             catch (Exception ex)
             {
                 if (ex.Message == "Reservation not found.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "You can't change the reservation less than 24 hours before the reservation.")
                 {
@@ -46,12 +55,17 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpPut("/changeDesk")]
-        public ActionResult<ChangeReservationDeskResponseDto> ChangeReservationDesk(ChangeReservationDeskCommandDto changeReservationDeskCommandDto)
+        [HttpPut("/reservations/{reservationId}/desk")]
+        public ActionResult<ChangeReservationDeskResponseDto> ChangeReservationDesk(int reservationId, [FromQuery] int deskId)
         {
             try
             {
-                var response = _reservationService.ChangeReservationDesk(changeReservationDeskCommandDto);
+                var queryDto = new ChangeReservationDeskCommandDto
+                {
+                    Id = reservationId,
+                    DeskId = deskId
+                };
+                var response = _reservationService.ChangeReservationDesk(queryDto);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -75,12 +89,11 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpPost("/reserveDesk/{deskId}")]
-        public ActionResult<ReserveDeskResponseDto> ReserveDesk(int deskId, [FromBody] ReserveDeskCommandDto reserveDeskCommandDto)
+        [HttpPost("/reservations/desk")]
+        public ActionResult<ReserveDeskResponseDto> ReserveDesk(ReserveDeskCommandDto reserveDeskCommandDto)
         {
             try
             {
-                reserveDeskCommandDto.DeskId = deskId;
                 var response = _reservationService.Reserve(reserveDeskCommandDto);
                 return Ok(response);
             }

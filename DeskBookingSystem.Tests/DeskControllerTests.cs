@@ -32,7 +32,7 @@ namespace DeskBookingSystem.Tests
         {
             // Arrange
             var context = InMemoryContext();
-            context.Desks.Add(new Desk { Id = 1, IsAvailable = false, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 1, IsOperational = false, LocationId = 1 });
             context.SaveChanges();
 
             var controller = new DeskController(context);
@@ -51,7 +51,7 @@ namespace DeskBookingSystem.Tests
         {
             // Arrange
             var context = InMemoryContext();
-            context.Desks.Add(new Desk { Id = 1, IsAvailable = true, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 1, IsOperational = true, LocationId = 1 });
             context.SaveChanges();
 
             var controller = new DeskController(context);
@@ -70,7 +70,7 @@ namespace DeskBookingSystem.Tests
         {
             // Arrange
             var context = InMemoryContext();
-            var desk = new Desk { Id = 1, IsAvailable = true, LocationId = 1 };
+            var desk = new Desk { Id = 1, IsOperational = true, LocationId = 1 };
             var existingReservation = new Reservation
             {
                 DeskId = 1,
@@ -98,7 +98,7 @@ namespace DeskBookingSystem.Tests
         {
             // Arrange
             var context = InMemoryContext();
-            context.Desks.Add(new Desk { Id = 1, IsAvailable = true, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 1, IsOperational = true, LocationId = 1 });
             context.SaveChanges();
 
             var controller = new DeskController(context);
@@ -134,7 +134,7 @@ namespace DeskBookingSystem.Tests
             // Arrange
             var context = InMemoryContext();
             var location = new Location { Id = 1, Name = "Biuro Główne - Kraków" };
-            var desk = new Desk { Id = 1, IsAvailable = true, LocationId = 1, Location = location };
+            var desk = new Desk { Id = 1, IsOperational = true, LocationId = 1, Location = location };
             context.Locations.Add(location);
             context.Desks.Add(desk);
             context.SaveChanges();
@@ -229,7 +229,7 @@ namespace DeskBookingSystem.Tests
             // Arrange
             var context = InMemoryContext();
             context.Locations.Add(new Location { Id = 1, Name = "Kraków" });
-            context.Desks.Add(new Desk { Id = 1, IsAvailable = true, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 1, IsOperational = true, LocationId = 1 });
             context.SaveChanges();
 
             var controller = new DeskController(context);
@@ -264,7 +264,7 @@ namespace DeskBookingSystem.Tests
         {
             // Arrange
             var context = InMemoryContext();
-            var desk = new Desk { Id = 1, IsAvailable = true, LocationId = 1 };
+            var desk = new Desk { Id = 1, IsOperational = true, LocationId = 1 };
             var reservation = new Reservation { Id = 1, DeskId = 1, ReservationDate = DateTime.Now.AddDays(1), HowManyDays = 2, UserId = 2 };
             context.Desks.Add(desk);
             context.Reservations.Add(reservation);
@@ -302,7 +302,7 @@ namespace DeskBookingSystem.Tests
         {
             // Arrange
             var context = InMemoryContext();
-            context.Desks.Add(new Desk { Id = 1, IsAvailable = false, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 1, IsOperational = false, LocationId = 1 });
             context.SaveChanges();
             var controller = new DeskController(context);
 
@@ -320,7 +320,7 @@ namespace DeskBookingSystem.Tests
         {
             // Arrange
             var context = InMemoryContext();
-            context.Desks.Add(new Desk { Id = 1, IsAvailable = true, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 1, IsOperational = true, LocationId = 1 });
             context.SaveChanges();
 
             var controller = new DeskController(context);
@@ -334,7 +334,7 @@ namespace DeskBookingSystem.Tests
             Assert.Equal("Desk disabled successfully.", result.Value);
 
             var desk = context.Desks.Find(1);
-            Assert.False(desk!.IsAvailable);
+            Assert.False(desk!.IsOperational);
         }
 
         [Fact]
@@ -342,7 +342,7 @@ namespace DeskBookingSystem.Tests
         {
             // Arrange
             var context = InMemoryContext();
-            var desk = new Desk { Id = 1, IsAvailable = true, LocationId = 1 };
+            var desk = new Desk { Id = 1, IsOperational = true, LocationId = 1 };
             context.Desks.Add(desk);
             context.Reservations.Add(new Reservation { DeskId = 1, ReservationDate = DateTime.Now.AddDays(2), HowManyDays = 2, UserId = 1 });
             context.SaveChanges();

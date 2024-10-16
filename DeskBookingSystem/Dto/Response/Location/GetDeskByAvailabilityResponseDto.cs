@@ -1,4 +1,4 @@
-﻿namespace DeskBookingSystem.Dto.Response.Location
+﻿namespace DeskBookingSystem.Dto
 {
     public class GetDeskByAvailabilityResponseDto
     {

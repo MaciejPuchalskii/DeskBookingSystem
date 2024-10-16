@@ -36,15 +36,15 @@ namespace DeskBookingSystem.Data
             );
 
             modelBuilder.Entity<Desk>().HasData(
-              new Desk { Id = 1, IsAvailable = true, LocationId = 1 },
-              new Desk { Id = 2, IsAvailable = false, LocationId = 1 },
-              new Desk { Id = 3, IsAvailable = true, LocationId = 1 },
-              new Desk { Id = 4, IsAvailable = true, LocationId = 2 },
-              new Desk { Id = 5, IsAvailable = true, LocationId = 3 },
-              new Desk { Id = 6, IsAvailable = false, LocationId = 3 },
-              new Desk { Id = 7, IsAvailable = false, LocationId = 4 },
-              new Desk { Id = 8, IsAvailable = false, LocationId = 4 },
-              new Desk { Id = 9, IsAvailable = true, LocationId = 5 }
+              new Desk { Id = 1, IsOperational = true, LocationId = 1 },
+              new Desk { Id = 2, IsOperational = false, LocationId = 1 },
+              new Desk { Id = 3, IsOperational = true, LocationId = 1 },
+              new Desk { Id = 4, IsOperational = true, LocationId = 2 },
+              new Desk { Id = 5, IsOperational = true, LocationId = 3 },
+              new Desk { Id = 6, IsOperational = false, LocationId = 3 },
+              new Desk { Id = 7, IsOperational = false, LocationId = 4 },
+              new Desk { Id = 8, IsOperational = false, LocationId = 4 },
+              new Desk { Id = 9, IsOperational = true, LocationId = 5 }
             );
 
             modelBuilder.Entity<Reservation>().HasData(

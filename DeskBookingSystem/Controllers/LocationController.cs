@@ -27,7 +27,7 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Location name cannot be empty.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "Location with this name already exists.")
                 {
@@ -53,7 +53,7 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Location not found.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "Cannot remove location with assigned desks.")
                 {
@@ -71,14 +71,14 @@ namespace DeskBookingSystem.Controllers
         }
 
         [HttpGet("/locations/{locationId}/desks")]
-        public ActionResult<GetDesksFromLocationResponseDto> GetDesks(int locationId, bool? areAvailable = null)
+        public ActionResult<GetDesksFromLocationResponseDto> GetDesks(int locationId, bool? areOperational = null)
         {
             try
             {
                 var queryDto = new GetDesksFromLocationQueryDto
                 {
                     LocationId = locationId,
-                    areAvailable = areAvailable
+                    areOperational = areOperational
                 };
                 var desks = _locationService.GetDesks(queryDto);
                 return Ok(desks);

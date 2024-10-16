@@ -33,7 +33,7 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Location not found.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else
                 {
@@ -56,7 +56,7 @@ namespace DeskBookingSystem.Controllers
                     responseDtos.Add(_deskService.Add(new AddDeskCommandDto
                     {
                         LocationId = addMutlipleDeskCommandDto.LocationId,
-                        IsAvailable = addMutlipleDeskCommandDto.IsAvailable
+                        IsOperational = addMutlipleDeskCommandDto.IsOperational
                     }));
                 }
 
@@ -72,7 +72,7 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Location not found.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else
                 {
@@ -82,8 +82,8 @@ namespace DeskBookingSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("/{deskId}")]
-        public ActionResult<RemoveDeskResponseDto> RemoveDesk( int deskId)
+        [HttpDelete("{deskId}")]
+        public ActionResult<RemoveDeskResponseDto> RemoveDesk(int deskId)
         {
             try
             {
@@ -94,11 +94,11 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Desk not found.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "Cannot remove desk with existing reservations.")
                 {
-                    return BadRequest(ex.Message);
+                    return Conflict(ex.Message);
                 }
                 else if (ex.Message == "Failed to remove desk.")
                 {
@@ -124,7 +124,7 @@ namespace DeskBookingSystem.Controllers
             {
                 if (ex.Message == "Desk not found.")
                 {
-                    return BadRequest(ex.Message);
+                    return NotFound(ex.Message);
                 }
                 else if (ex.Message == "Cannot disable a desk with existing reservations.")
                 {

@@ -19,7 +19,7 @@ namespace DeskBookingSystem.Services
         {
             var desk = new Desk
             {
-                IsAvailable = addDeskCommandDto.IsAvailable,
+                IsOperational = addDeskCommandDto.IsOperational,
                 LocationId = addDeskCommandDto.LocationId,
             };
             _deskRepository.Add(desk);
@@ -28,7 +28,7 @@ namespace DeskBookingSystem.Services
             {
                 Id = desk.Id,
                 LocationId = desk.LocationId,
-                IsAvailable = desk.IsAvailable
+                IsOperational = desk.IsOperational
             };
         }
 
@@ -63,16 +63,16 @@ namespace DeskBookingSystem.Services
             {
                 throw new Exception("Desk not found.");
             }
-            if (desk.Reservations.Any() && !changeDeskAvailabiltyCommandDto.IsAvailable)
+            if (desk.Reservations.Any() && !changeDeskAvailabiltyCommandDto.IsOperational)
             {
                 throw new Exception("Cannot disable a desk with existing reservations.");
             }
-            _deskRepository.ChangeDeskAvailability(desk, changeDeskAvailabiltyCommandDto.IsAvailable);
+            _deskRepository.ChangeDeskAvailability(desk, changeDeskAvailabiltyCommandDto.IsOperational);
 
             return new ChangeDeskAvailabiltyResponseDto()
             {
                 Id = desk.Id,
-                Availability = desk.IsAvailable
+                Availability = desk.IsOperational
             };
         }
 
@@ -89,7 +89,7 @@ namespace DeskBookingSystem.Services
             return new GetDeskDetailsResponseDto()
             {
                 Id = desk.Id,
-                IsAvailable = desk.IsAvailable,
+                IsOperational = desk.IsOperational,
                 LocatioId = desk.LocationId,
                 Reservations = isAdmin ? desk.Reservations.Select(r => new ReservationDto
                 {
