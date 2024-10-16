@@ -71,14 +71,14 @@ namespace DeskBookingSystem.Controllers
         }
 
         [HttpGet("/locations/{locationId}/desks")]
-        public ActionResult<GetDesksFromLocationResponseDto> GetDesks(int locationId, bool? areAvailable = null)
+        public ActionResult<GetDesksFromLocationResponseDto> GetDesks(int locationId, bool? areOperational = null)
         {
             try
             {
                 var queryDto = new GetDesksFromLocationQueryDto
                 {
                     LocationId = locationId,
-                    areAvailable = areAvailable
+                    areOperational = areOperational
                 };
                 var desks = _locationService.GetDesks(queryDto);
                 return Ok(desks);

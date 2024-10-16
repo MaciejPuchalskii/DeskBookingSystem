@@ -71,9 +71,9 @@ namespace DeskBookingSystem.Services
                 throw new Exception("No desks found in this location.");
             }
 
-            if (getDesksFromLocationQueryDto.areAvailable.HasValue)
+            if (getDesksFromLocationQueryDto.areOperational.HasValue)
             {
-                allDesksInLocation = allDesksInLocation.Where(d => d.IsAvailable == getDesksFromLocationQueryDto.areAvailable).ToList();
+                allDesksInLocation = allDesksInLocation.Where(d => d.IsOperational == getDesksFromLocationQueryDto.areOperational).ToList();
             }
 
             var desksDto = new GetDesksFromLocationResponseDto()
@@ -82,7 +82,7 @@ namespace DeskBookingSystem.Services
                 Desks = allDesksInLocation.Select(d => new DeskDetailsDto()
                 {
                     Id = d.Id,
-                    IsAvailable = d.IsAvailable
+                    IsOperational = d.IsOperational
                 }).ToList()
             };
 
@@ -100,7 +100,7 @@ namespace DeskBookingSystem.Services
             {
                 throw new Exception("No desks found in this location.");
             }
-            var allAvailableDesksInLocation = location.Desks.Where(d => !d.Reservations.Any(r => (r.ReservationDate < getDesksByAvailabilityQueryDto.EndDate && r.ReservationDate.AddDays(r.HowManyDays) > getDesksByAvailabilityQueryDto.StartDate)) /*&& d.IsAvailable == true*/).ToList();
+            var allAvailableDesksInLocation = location.Desks.Where(d => !d.Reservations.Any(r => (r.ReservationDate < getDesksByAvailabilityQueryDto.EndDate && r.ReservationDate.AddDays(r.HowManyDays) > getDesksByAvailabilityQueryDto.StartDate)) && d.IsOperational == true).ToList();
 
             if (!allAvailableDesksInLocation.Any())
             {

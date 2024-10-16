@@ -34,7 +34,7 @@ namespace DeskBookingSystem.Repositories
 
         public void ChangeDeskAvailability(Desk desk, bool newStatus)
         {
-            desk.IsAvailable = newStatus;
+            desk.IsOperational = newStatus;
             _context.SaveChanges();
         }
 

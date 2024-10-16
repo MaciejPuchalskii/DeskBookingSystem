@@ -52,9 +52,9 @@ namespace DeskBookingSystem.Tests
             // Arrange
             var context = InMemoryContext();
             context.Locations.Add(new Location { Id = 1, Name = "Biuro Główne - Kraków" });
-            context.Desks.Add(new Desk { Id = 1, IsAvailable = true, LocationId = 1 });
-            context.Desks.Add(new Desk { Id = 2, IsAvailable = true, LocationId = 1 });
-            context.Desks.Add(new Desk { Id = 3, IsAvailable = false, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 1, IsOperational = true, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 2, IsOperational = true, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 3, IsOperational = false, LocationId = 1 });
             context.SaveChanges();
 
             var controller = new LocationController(context);
@@ -77,8 +77,8 @@ namespace DeskBookingSystem.Tests
             // Arrange
             var context = InMemoryContext();
             context.Locations.Add(new Location { Id = 1, Name = "Biuro Główne - Kraków" });
-            context.Desks.Add(new Desk { Id = 1, IsAvailable = true, LocationId = 1 });
-            context.Desks.Add(new Desk { Id = 2, IsAvailable = false, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 1, IsOperational = true, LocationId = 1 });
+            context.Desks.Add(new Desk { Id = 2, IsOperational = false, LocationId = 1 });
             context.SaveChanges();
 
             var controller = new LocationController(context);

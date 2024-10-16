@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public int LocationId { get; set; }
-        public bool IsAvailable { get; set; }
+        public bool IsOperational { get; set; }
     }
 }
