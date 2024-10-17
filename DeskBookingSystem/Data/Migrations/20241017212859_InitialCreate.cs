@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace DeskBookingSystem.Data.Migrations
+namespace DeskBookingSystem.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -13,22 +13,6 @@ namespace DeskBookingSystem.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Surname = table.Column<string>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    IsAdmin = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Locations",
                 columns: table => new
@@ -43,12 +27,30 @@ namespace DeskBookingSystem.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserName = table.Column<string>(type: "TEXT", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Surname = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    IsAdmin = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Desks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    IsAvailable = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsOperational = table.Column<bool>(type: "INTEGER", nullable: false),
                     LocationId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -70,10 +72,9 @@ namespace DeskBookingSystem.Data.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     BookingDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ReservationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-
-                    Days = table.Column<int>(type: "INTEGER", nullable: false),
+                    DaysCount = table.Column<int>(type: "INTEGER", nullable: false),
                     DeskId = table.Column<int>(type: "INTEGER", nullable: false),
-                    EmployeeId = table.Column<int>(type: "INTEGER", nullable: false)
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,20 +86,11 @@ namespace DeskBookingSystem.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Reservations_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Employees",
+                        name: "FK_Reservations_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Employees",
-                columns: new[] { "Id", "Email", "IsAdmin", "Name", "Surname" },
-                values: new object[,]
-                {
-                    { 1, "jan.kowalski@mail.com", true, "Jan", "Kowalski" },
-                    { 2, "anna.kowalska@example.com", false, "Anna", "Kowalska" }
                 });
 
             migrationBuilder.InsertData(
@@ -115,7 +107,7 @@ namespace DeskBookingSystem.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Desks",
-                columns: new[] { "Id", "IsAvailable", "LocationId" },
+                columns: new[] { "Id", "IsOperational", "LocationId" },
                 values: new object[,]
                 {
                     { 1, true, 1 },
@@ -131,8 +123,8 @@ namespace DeskBookingSystem.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Reservations",
-                columns: new[] { "Id", "BookingDate", "DeskId", "EmployeeId", "HowManyDays", "ReservationDate" },
-                values: new object[] { 1, new DateTime(2024, 10, 12, 9, 9, 43, 371, DateTimeKind.Local).AddTicks(3056), 1, 2, 2, new DateTime(2024, 10, 13, 9, 9, 43, 371, DateTimeKind.Local).AddTicks(3113) });
+                columns: new[] { "Id", "BookingDate", "DaysCount", "DeskId", "ReservationDate", "UserId" },
+                values: new object[] { 1, new DateTime(2024, 10, 17, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6843), 2, 1, new DateTime(2024, 10, 18, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6894), 2 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Desks_LocationId",
@@ -145,9 +137,9 @@ namespace DeskBookingSystem.Data.Migrations
                 column: "DeskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reservations_EmployeeId",
+                name: "IX_Reservations_UserId",
                 table: "Reservations",
-                column: "EmployeeId");
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -160,7 +152,7 @@ namespace DeskBookingSystem.Data.Migrations
                 name: "Desks");
 
             migrationBuilder.DropTable(
-                name: "Employees");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Locations");

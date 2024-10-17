@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DeskBookingSystem.Data.Migrations
+namespace DeskBookingSystem.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    [Migration("20241012182821_changeStructureColumns")]
-    partial class changeStructureColumns
+    [Migration("20241017212859_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,13 +20,13 @@ namespace DeskBookingSystem.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.20");
 
-            modelBuilder.Entity("DeskBookingSystem.Models.Desk", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.Desk", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsAvailable")
+                    b.Property<bool>("IsOperational")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("LocationId")
@@ -42,60 +42,60 @@ namespace DeskBookingSystem.Data.Migrations
                         new
                         {
                             Id = 1,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 2,
-                            IsAvailable = false,
+                            IsOperational = false,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 3,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 4,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 2
                         },
                         new
                         {
                             Id = 5,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 3
                         },
                         new
                         {
                             Id = 6,
-                            IsAvailable = false,
+                            IsOperational = false,
                             LocationId = 3
                         },
                         new
                         {
                             Id = 7,
-                            IsAvailable = false,
+                            IsOperational = false,
                             LocationId = 4
                         },
                         new
                         {
                             Id = 8,
-                            IsAvailable = false,
+                            IsOperational = false,
                             LocationId = 4
                         },
                         new
                         {
                             Id = 9,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 5
                         });
                 });
 
-            modelBuilder.Entity("DeskBookingSystem.Models.Location", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.Location", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -137,7 +137,7 @@ namespace DeskBookingSystem.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DeskBookingSystem.Models.Reservation", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.Reservation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -146,10 +146,10 @@ namespace DeskBookingSystem.Data.Migrations
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DeskId")
+                    b.Property<int>("DaysCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HowManyDays")
+                    b.Property<int>("DeskId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("ReservationDate")
@@ -170,15 +170,15 @@ namespace DeskBookingSystem.Data.Migrations
                         new
                         {
                             Id = 1,
-                            BookingDate = new DateTime(2024, 10, 12, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4553),
+                            BookingDate = new DateTime(2024, 10, 17, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6843),
+                            DaysCount = 2,
                             DeskId = 1,
-                            HowManyDays = 2,
-                            ReservationDate = new DateTime(2024, 10, 13, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4607),
+                            ReservationDate = new DateTime(2024, 10, 18, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6894),
                             UserId = 2
                         });
                 });
 
-            modelBuilder.Entity("DeskBookingSystem.Models.User", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,9 +212,9 @@ namespace DeskBookingSystem.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("DeskBookingSystem.Models.Desk", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.Desk", b =>
                 {
-                    b.HasOne("DeskBookingSystem.Models.Location", "Location")
+                    b.HasOne("DeskBookingSystem.Data.Models.Location", "Location")
                         .WithMany("Desks")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -223,15 +223,15 @@ namespace DeskBookingSystem.Data.Migrations
                     b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("DeskBookingSystem.Models.Reservation", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.Reservation", b =>
                 {
-                    b.HasOne("DeskBookingSystem.Models.Desk", "Desk")
+                    b.HasOne("DeskBookingSystem.Data.Models.Desk", "Desk")
                         .WithMany("Reservations")
                         .HasForeignKey("DeskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DeskBookingSystem.Models.User", "User")
+                    b.HasOne("DeskBookingSystem.Data.Models.User", "User")
                         .WithMany("Reservations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -242,17 +242,17 @@ namespace DeskBookingSystem.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DeskBookingSystem.Models.Desk", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.Desk", b =>
                 {
                     b.Navigation("Reservations");
                 });
 
-            modelBuilder.Entity("DeskBookingSystem.Models.Location", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.Location", b =>
                 {
                     b.Navigation("Desks");
                 });
 
-            modelBuilder.Entity("DeskBookingSystem.Models.User", b =>
+            modelBuilder.Entity("DeskBookingSystem.Data.Models.User", b =>
                 {
                     b.Navigation("Reservations");
                 });

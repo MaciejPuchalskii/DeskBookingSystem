@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DeskBookingSystem.Data.Migrations
+namespace DeskBookingSystem.Migrations
 {
     [DbContext(typeof(BookingContext))]
     partial class BookingContextModelSnapshot : ModelSnapshot
@@ -167,10 +167,10 @@ namespace DeskBookingSystem.Data.Migrations
                         new
                         {
                             Id = 1,
-                            BookingDate = new DateTime(2024, 10, 17, 14, 49, 0, 858, DateTimeKind.Local).AddTicks(8066),
+                            BookingDate = new DateTime(2024, 10, 17, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6843),
                             DaysCount = 2,
                             DeskId = 1,
-                            ReservationDate = new DateTime(2024, 10, 18, 14, 49, 0, 858, DateTimeKind.Local).AddTicks(8115),
+                            ReservationDate = new DateTime(2024, 10, 18, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6894),
                             UserId = 2
                         });
                 });
