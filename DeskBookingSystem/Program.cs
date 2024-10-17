@@ -1,9 +1,12 @@
 using DeskBookingSystem.Configurations;
 using DeskBookingSystem.Data;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Configuration;
+using System.Reflection;
 
 namespace DeskBookingSystem
 {
@@ -15,7 +18,12 @@ namespace DeskBookingSystem
 
             // Add services to the container.
             builder.Services.AddDbContext<BookingContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddFluentValidation(v =>
+            {
+                v.ImplicitlyValidateChildProperties = true;
+                v.ImplicitlyValidateRootCollectionElements = true;
+                v.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            });
             builder.Services.ConfigureServices();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddEndpointsApiExplorer();
