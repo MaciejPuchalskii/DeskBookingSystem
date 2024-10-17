@@ -1,4 +1,4 @@
-﻿namespace DeskBookingSystem.Models
+﻿namespace DeskBookingSystem.Data.Models
 {
     public class Reservation
     {

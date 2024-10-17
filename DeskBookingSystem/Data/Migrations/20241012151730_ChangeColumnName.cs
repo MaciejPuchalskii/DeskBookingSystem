@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DeskBookingSystem.Migrations
+namespace DeskBookingSystem.Data.Migrations
 {
     /// <inheritdoc />
     public partial class ChangeColumnName : Migration

@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DeskBookingSystem.Migrations
+namespace DeskBookingSystem.Data.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    [Migration("20241012153316_ChangeColumnsName")]
-    partial class ChangeColumnsName
+    [Migration("20241012182821_changeStructureColumns")]
+    partial class changeStructureColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,10 +170,10 @@ namespace DeskBookingSystem.Migrations
                         new
                         {
                             Id = 1,
-                            BookingDate = new DateTime(2024, 10, 12, 17, 33, 16, 803, DateTimeKind.Local).AddTicks(4138),
+                            BookingDate = new DateTime(2024, 10, 12, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4553),
                             DeskId = 1,
                             HowManyDays = 2,
-                            ReservationDate = new DateTime(2024, 10, 13, 17, 33, 16, 803, DateTimeKind.Local).AddTicks(4193),
+                            ReservationDate = new DateTime(2024, 10, 13, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4607),
                             UserId = 2
                         });
                 });
@@ -188,11 +188,14 @@ namespace DeskBookingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

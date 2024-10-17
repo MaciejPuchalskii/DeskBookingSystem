@@ -3,16 +3,19 @@ using System;
 using DeskBookingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DeskBookingSystem.Migrations
+namespace DeskBookingSystem.Data.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    partial class BookingContextModelSnapshot : ModelSnapshot
+    [Migration("20241012070943_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.20");
@@ -23,7 +26,7 @@ namespace DeskBookingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsOperational")
+                    b.Property<bool>("IsAvailable")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("LocationId")
@@ -39,56 +42,100 @@ namespace DeskBookingSystem.Migrations
                         new
                         {
                             Id = 1,
-                            IsOperational = true,
+                            IsAvailable = true,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 2,
-                            IsOperational = false,
+                            IsAvailable = false,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 3,
-                            IsOperational = true,
+                            IsAvailable = true,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 4,
-                            IsOperational = true,
+                            IsAvailable = true,
                             LocationId = 2
                         },
                         new
                         {
                             Id = 5,
-                            IsOperational = true,
+                            IsAvailable = true,
                             LocationId = 3
                         },
                         new
                         {
                             Id = 6,
-                            IsOperational = false,
+                            IsAvailable = false,
                             LocationId = 3
                         },
                         new
                         {
                             Id = 7,
-                            IsOperational = false,
+                            IsAvailable = false,
                             LocationId = 4
                         },
                         new
                         {
                             Id = 8,
-                            IsOperational = false,
+                            IsAvailable = false,
                             LocationId = 4
                         },
                         new
                         {
                             Id = 9,
-                            IsOperational = true,
+                            IsAvailable = true,
                             LocationId = 5
+                        });
+                });
+
+            modelBuilder.Entity("DeskBookingSystem.Models.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "jan.kowalski@mail.com",
+                            IsAdmin = true,
+                            Name = "Jan",
+                            Surname = "Kowalski"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "anna.kowalska@example.com",
+                            IsAdmin = false,
+                            Name = "Anna",
+                            Surname = "Kowalska"
                         });
                 });
 
@@ -146,20 +193,20 @@ namespace DeskBookingSystem.Migrations
                     b.Property<int>("DeskId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("HowManyDays")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DeskId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Reservations");
 
@@ -167,46 +214,12 @@ namespace DeskBookingSystem.Migrations
                         new
                         {
                             Id = 1,
-                            BookingDate = new DateTime(2024, 10, 17, 0, 40, 26, 984, DateTimeKind.Local).AddTicks(5315),
+                            BookingDate = new DateTime(2024, 10, 12, 9, 9, 43, 371, DateTimeKind.Local).AddTicks(3056),
                             DeskId = 1,
+                            EmployeeId = 2,
                             HowManyDays = 2,
-                            ReservationDate = new DateTime(2024, 10, 18, 0, 40, 26, 984, DateTimeKind.Local).AddTicks(5411),
-                            UserId = 2
+                            ReservationDate = new DateTime(2024, 10, 13, 9, 9, 43, 371, DateTimeKind.Local).AddTicks(3113)
                         });
-                });
-
-            modelBuilder.Entity("DeskBookingSystem.Models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("DeskBookingSystem.Models.Desk", b =>
@@ -228,15 +241,15 @@ namespace DeskBookingSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DeskBookingSystem.Models.User", "User")
+                    b.HasOne("DeskBookingSystem.Models.Employee", "Employee")
                         .WithMany("Reservations")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Desk");
 
-                    b.Navigation("User");
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("DeskBookingSystem.Models.Desk", b =>
@@ -244,14 +257,14 @@ namespace DeskBookingSystem.Migrations
                     b.Navigation("Reservations");
                 });
 
+            modelBuilder.Entity("DeskBookingSystem.Models.Employee", b =>
+                {
+                    b.Navigation("Reservations");
+                });
+
             modelBuilder.Entity("DeskBookingSystem.Models.Location", b =>
                 {
                     b.Navigation("Desks");
-                });
-
-            modelBuilder.Entity("DeskBookingSystem.Models.User", b =>
-                {
-                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }
