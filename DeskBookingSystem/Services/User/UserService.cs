@@ -1,5 +1,5 @@
-﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Data.Models;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -25,7 +25,7 @@ namespace DeskBookingSystem.Services
             {
                 throw new Exception("Username or password cannot be empty.");
             }
-            if (_userRepository.ExistsByUsername(registerCommandDto.UserName))
+            if (_userRepository.DoesUsernamExist(registerCommandDto.UserName))
             {
                 throw new Exception("User with this username already exists.");
             }
@@ -60,13 +60,18 @@ namespace DeskBookingSystem.Services
                 throw new Exception("Username or password cannot be empty.");
             }
 
-            if (!_userRepository.ExistsByUsername(loginCommandDto.UserName))
+            if (!_userRepository.DoesUsernamExist(loginCommandDto.UserName))
             {
-                throw new Exception("User with this username doesn't exist.");
+                throw new Exception("Invalid username or password.");
             }
 
-            var user = _userRepository.GetUserIfPasswordCorrect(loginCommandDto.UserName, loginCommandDto.Password);
+            var user = _userRepository.GetUser(loginCommandDto.UserName);
             if (user == null)
+            {
+                throw new Exception("Invalid username or password.");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(loginCommandDto.Password, user.PasswordHash))
             {
                 throw new Exception("Invalid username or password.");
             }

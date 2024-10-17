@@ -1,4 +1,4 @@
-﻿using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Data.Models;
 
 namespace DeskBookingSystem.Repositories
 {
@@ -6,8 +6,8 @@ namespace DeskBookingSystem.Repositories
     {
         void Add(User user);
 
-        bool ExistsByUsername(string userName);
+        bool DoesUsernamExist(string userName);
 
-        User GetUserIfPasswordCorrect(string userName, string password);
+        User GetUser(string userName);
     }
 }

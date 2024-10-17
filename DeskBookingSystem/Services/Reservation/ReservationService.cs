@@ -1,7 +1,6 @@
-﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Data.Models;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace DeskBookingSystem.Services
 {
@@ -30,7 +29,7 @@ namespace DeskBookingSystem.Services
                 throw new Exception("You can't change the reservation less than 24 hours before the reservation.");
             }
 
-            var reservationsOfThisDesk = _reservationRepository.GetAllReservationsByDeskId(reservation.DeskId);
+            var reservationsOfThisDesk = _reservationRepository.GetAllByDeskId(reservation.DeskId);
 
             bool isDeskReserved = reservationsOfThisDesk.Any(r =>
      (changeReservationDateCommandDto.NewDate < r.BookingDate.AddDays(r.HowManyDays) &&
@@ -71,7 +70,7 @@ namespace DeskBookingSystem.Services
                 throw new Exception("You can't change the desk less than 24 hours before the reservation.");
             }
 
-            var newDeskReservations = _reservationRepository.GetAllReservationsByDeskId(changeReservationDeskCommandDto.DeskId);
+            var newDeskReservations = _reservationRepository.GetAllByDeskId(changeReservationDeskCommandDto.DeskId);
             bool hasConflictingReservation = newDeskReservations.Any(r =>
                                                                            r.ReservationDate < reservation.ReservationDate.AddDays(reservation.HowManyDays) &&
                                                                            r.ReservationDate.AddDays(r.HowManyDays) > reservation.ReservationDate);

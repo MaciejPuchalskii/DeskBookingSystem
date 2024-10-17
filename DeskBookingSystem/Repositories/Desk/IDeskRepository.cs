@@ -1,5 +1,5 @@
-﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Data.Models;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Services;
 
 namespace DeskBookingSystem.Repositories

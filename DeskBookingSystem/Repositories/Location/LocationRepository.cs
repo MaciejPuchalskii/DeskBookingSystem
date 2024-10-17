@@ -1,5 +1,5 @@
 ﻿using DeskBookingSystem.Data;
-using DeskBookingSystem.Models;
+using DeskBookingSystem.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Xml.Linq;
 
@@ -20,12 +20,12 @@ namespace DeskBookingSystem.Repositories
             _context.SaveChanges();
         }
 
-        public bool ExistLocation(int locationId)
+        public bool DoesLocationExist(int locationId)
         {
             return _context.Locations.Any(l => l.Id == locationId);
         }
 
-        public bool ExistLocation(string name)
+        public bool DoesLocationExist(string name)
         {
             return _context.Locations.Any(l => l.Name == name);
         }

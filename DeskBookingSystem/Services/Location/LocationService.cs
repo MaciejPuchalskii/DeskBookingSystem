@@ -1,5 +1,5 @@
-﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Data.Models;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Repositories;
 
 namespace DeskBookingSystem.Services
@@ -20,7 +20,7 @@ namespace DeskBookingSystem.Services
                 throw new Exception("Location name cannot be empty.");
             }
 
-            if (_locationRepository.ExistLocation(addLocationCommandDto.Name))
+            if (_locationRepository.DoesLocationExist(addLocationCommandDto.Name))
             {
                 throw new Exception("Location with this name already exists.");
             }
@@ -41,15 +41,15 @@ namespace DeskBookingSystem.Services
 
         public void ExistLocation(int locationId)
         {
-            if (!_locationRepository.ExistLocation(locationId))
+            if (!_locationRepository.DoesLocationExist(locationId))
             {
                 throw new Exception("Location not found.");
             }
         }
 
-        public void ExistLocation(string name)
+        public void DoesLocationExist(string name)
         {
-            if (!_locationRepository.ExistLocation(name))
+            if (!_locationRepository.DoesLocationExist(name))
             {
                 throw new Exception("Location not found.");
             }

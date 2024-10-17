@@ -1,5 +1,5 @@
 ﻿using DeskBookingSystem.Data;
-using DeskBookingSystem.Models;
+using DeskBookingSystem.Data.Models;
 using DeskBookingSystem.Services;
 using Microsoft.EntityFrameworkCore;
 

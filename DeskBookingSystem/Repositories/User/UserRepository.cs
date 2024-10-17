@@ -1,5 +1,5 @@
 ﻿using DeskBookingSystem.Data;
-using DeskBookingSystem.Models;
+using DeskBookingSystem.Data.Models;
 
 namespace DeskBookingSystem.Repositories
 {
@@ -18,12 +18,12 @@ namespace DeskBookingSystem.Repositories
             _context.SaveChanges();
         }
 
-        public bool ExistsByUsername(string userName)
+        public bool DoesUsernamExist(string userName)
         {
             return _context.Users.Any(u => u.UserName == userName);
         }
 
-        public User GetUserIfPasswordCorrect(string userName, string password)
+        public User GetUser(string userName)
         {
             var user = _context.Users.FirstOrDefault(u => u.UserName == userName);
 
@@ -32,12 +32,7 @@ namespace DeskBookingSystem.Repositories
                 return null;
             }
 
-            if (BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-            {
-                return user;
-            }
-
-            return null;
+            return user;
         }
     }
 }
