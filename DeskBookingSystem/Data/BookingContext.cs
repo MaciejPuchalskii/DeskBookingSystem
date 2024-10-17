@@ -45,18 +45,6 @@ namespace DeskBookingSystem.Data
               new Desk { Id = 8, IsOperational = false, LocationId = 4 },
               new Desk { Id = 9, IsOperational = true, LocationId = 5 }
             );
-
-            modelBuilder.Entity<Reservation>().HasData(
-                new Reservation
-                {
-                    Id = 1,
-                    BookingDate = DateTime.Now,
-                    ReservationDate = DateTime.Now.AddDays(1),
-                    DaysCount = 2,
-                    DeskId = 1,
-                    UserId = 2
-                }
-            );
         }
     }
 }

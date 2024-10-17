@@ -121,11 +121,6 @@ namespace DeskBookingSystem.Migrations
                     { 9, true, 5 }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Reservations",
-                columns: new[] { "Id", "BookingDate", "DaysCount", "DeskId", "ReservationDate", "UserId" },
-                values: new object[] { 1, new DateTime(2024, 10, 17, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6843), 2, 1, new DateTime(2024, 10, 18, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6894), 2 });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Desks_LocationId",
                 table: "Desks",

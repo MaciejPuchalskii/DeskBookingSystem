@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeskBookingSystem.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    [Migration("20241017212859_InitialCreate")]
+    [Migration("20241017213503_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -165,17 +165,6 @@ namespace DeskBookingSystem.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BookingDate = new DateTime(2024, 10, 17, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6843),
-                            DaysCount = 2,
-                            DeskId = 1,
-                            ReservationDate = new DateTime(2024, 10, 18, 23, 28, 59, 134, DateTimeKind.Local).AddTicks(6894),
-                            UserId = 2
-                        });
                 });
 
             modelBuilder.Entity("DeskBookingSystem.Data.Models.User", b =>
