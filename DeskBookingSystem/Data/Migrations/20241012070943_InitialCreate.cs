@@ -70,7 +70,8 @@ namespace DeskBookingSystem.Data.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     BookingDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ReservationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    HowManyDays = table.Column<int>(type: "INTEGER", nullable: false),
+
+                    Days = table.Column<int>(type: "INTEGER", nullable: false),
                     DeskId = table.Column<int>(type: "INTEGER", nullable: false),
                     EmployeeId = table.Column<int>(type: "INTEGER", nullable: false)
                 },

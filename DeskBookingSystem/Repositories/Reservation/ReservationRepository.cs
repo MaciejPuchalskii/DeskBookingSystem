@@ -34,10 +34,10 @@ namespace DeskBookingSystem.Repositories
             _context.SaveChanges();
         }
 
-        public void UpdateReservation(Reservation reservation, int howManyDays, DateTime newDate)
+        public void UpdateReservation(Reservation reservation, int daysCount, DateTime newDate)
         {
             reservation.ReservationDate = newDate;
-            reservation.HowManyDays = howManyDays;
+            reservation.DaysCount = daysCount;
             _context.SaveChanges();
         }
     }

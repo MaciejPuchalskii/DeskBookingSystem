@@ -16,7 +16,7 @@ namespace DeskBookingSystem.Controllers
         }
 
         [HttpPut("{reservationId}/date")]
-        public ActionResult<ChangeReservationDateResponseDto> ChangeReservationDate([FromRoute] int reservationId, int userId, DateTime newDate, int howManyDays)
+        public ActionResult<ChangeReservationDateResponseDto> ChangeReservationDate([FromRoute] int reservationId, int userId, DateTime newDate, int daysCount)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace DeskBookingSystem.Controllers
                     ReservationId = reservationId,
                     UserId = userId,
                     NewDate = newDate,
-                    HowManyDays = howManyDays
+                    DaysCount = daysCount
                 };
                 var response = _reservationService.ChangeReservationDate(queryDto);
 

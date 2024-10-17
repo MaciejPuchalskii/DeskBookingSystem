@@ -99,7 +99,7 @@ namespace DeskBookingSystem.Services
             {
                 throw new Exception("No desks found in this location.");
             }
-            var allAvailableDesksInLocation = location.Desks.Where(d => !d.Reservations.Any(r => (r.ReservationDate < getDesksByAvailabilityQueryDto.EndDate && r.ReservationDate.AddDays(r.HowManyDays) > getDesksByAvailabilityQueryDto.StartDate)) && d.IsOperational == true).ToList();
+            var allAvailableDesksInLocation = location.Desks.Where(d => !d.Reservations.Any(r => (r.ReservationDate < getDesksByAvailabilityQueryDto.EndDate && r.ReservationDate.AddDays(r.DaysCount) > getDesksByAvailabilityQueryDto.StartDate)) && d.IsOperational == true).ToList();
 
             if (!allAvailableDesksInLocation.Any())
             {

@@ -96,7 +96,7 @@ namespace DeskBookingSystem.Services
                     Id = r.Id,
                     BookingDate = r.BookingDate,
                     ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
+                    DaysCount = r.DaysCount,
                     UserId = r.UserId
                 }).ToList()
                 : new List<ReservationDto>()

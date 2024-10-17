@@ -10,7 +10,7 @@ namespace DeskBookingSystem.Repositories
 
         void Update(Reservation reservation);
 
-        void UpdateReservation(Reservation reservation, int howManyDays, DateTime newDate);
+        void UpdateReservation(Reservation reservation, int daysCount, DateTime newDate);
 
         public void Add(Reservation reservation);
     }
