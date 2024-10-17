@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DeskBookingSystem.Migrations
+namespace DeskBookingSystem.Data.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    [Migration("20241012182821_changeStructureColumns")]
-    partial class changeStructureColumns
+    [Migration("20241016224027_RenameDeskColumn")]
+    partial class RenameDeskColumn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,7 @@ namespace DeskBookingSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsAvailable")
+                    b.Property<bool>("IsOperational")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("LocationId")
@@ -42,55 +42,55 @@ namespace DeskBookingSystem.Migrations
                         new
                         {
                             Id = 1,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 2,
-                            IsAvailable = false,
+                            IsOperational = false,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 3,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 1
                         },
                         new
                         {
                             Id = 4,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 2
                         },
                         new
                         {
                             Id = 5,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 3
                         },
                         new
                         {
                             Id = 6,
-                            IsAvailable = false,
+                            IsOperational = false,
                             LocationId = 3
                         },
                         new
                         {
                             Id = 7,
-                            IsAvailable = false,
+                            IsOperational = false,
                             LocationId = 4
                         },
                         new
                         {
                             Id = 8,
-                            IsAvailable = false,
+                            IsOperational = false,
                             LocationId = 4
                         },
                         new
                         {
                             Id = 9,
-                            IsAvailable = true,
+                            IsOperational = true,
                             LocationId = 5
                         });
                 });
@@ -170,10 +170,10 @@ namespace DeskBookingSystem.Migrations
                         new
                         {
                             Id = 1,
-                            BookingDate = new DateTime(2024, 10, 12, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4553),
+                            BookingDate = new DateTime(2024, 10, 17, 0, 40, 26, 984, DateTimeKind.Local).AddTicks(5315),
                             DeskId = 1,
                             HowManyDays = 2,
-                            ReservationDate = new DateTime(2024, 10, 13, 20, 28, 21, 461, DateTimeKind.Local).AddTicks(4607),
+                            ReservationDate = new DateTime(2024, 10, 18, 0, 40, 26, 984, DateTimeKind.Local).AddTicks(5411),
                             UserId = 2
                         });
                 });

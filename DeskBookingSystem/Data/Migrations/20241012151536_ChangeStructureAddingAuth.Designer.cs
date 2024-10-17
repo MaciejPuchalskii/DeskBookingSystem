@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DeskBookingSystem.Migrations
+namespace DeskBookingSystem.Data.Migrations
 {
     [DbContext(typeof(BookingContext))]
     [Migration("20241012151536_ChangeStructureAddingAuth")]

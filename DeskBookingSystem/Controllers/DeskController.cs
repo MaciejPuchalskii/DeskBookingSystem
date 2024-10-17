@@ -19,7 +19,7 @@ namespace DeskBookingSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost("/desks")]
+        [HttpPost("")]
         public ActionResult<AddDeskResponseDto> AddDesk(AddDeskCommandDto addDeskCommandDto)
         {
             try
@@ -137,7 +137,7 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpGet("/{deskId}/details")]
+        [HttpGet("/{deskId}")]
         public ActionResult<GetDeskDetailsResponseDto> GetDeskDetails(int deskId)
         {
             try

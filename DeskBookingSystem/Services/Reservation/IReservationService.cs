@@ -1,5 +1,4 @@
 ﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
 
 namespace DeskBookingSystem.Services
 {

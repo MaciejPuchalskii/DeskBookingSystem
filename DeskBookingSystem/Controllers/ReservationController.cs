@@ -1,10 +1,11 @@
 ﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
 using DeskBookingSystem.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeskBookingSystem.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ReservationController : Controller
     {
         private readonly IReservationService _reservationService;
@@ -14,8 +15,8 @@ namespace DeskBookingSystem.Controllers
             _reservationService = reservationService;
         }
 
-        [HttpPut("/reservations/{reservationId}/date")]
-        public ActionResult<ChangeReservationDateResponseDto> ChangeReservationDate([FromRoute] int reservationId, int userId, DateTime newDate, int howManyDays)
+        [HttpPut("{reservationId}/date")]
+        public ActionResult<ChangeReservationDateResponseDto> ChangeReservationDate([FromRoute] int reservationId, int userId, DateTime newDate, int daysCount)
         {
             try
             {
@@ -24,7 +25,7 @@ namespace DeskBookingSystem.Controllers
                     ReservationId = reservationId,
                     UserId = userId,
                     NewDate = newDate,
-                    HowManyDays = howManyDays
+                    DaysCount = daysCount
                 };
                 var response = _reservationService.ChangeReservationDate(queryDto);
 
@@ -55,7 +56,7 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpPut("/reservations/{reservationId}/desk")]
+        [HttpPut("{reservationId}/desk")]
         public ActionResult<ChangeReservationDeskResponseDto> ChangeReservationDesk(int reservationId, [FromQuery] int deskId)
         {
             try
@@ -89,7 +90,7 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpPost("/reservations/desk")]
+        [HttpPost("desk")]
         public ActionResult<ReserveDeskResponseDto> ReserveDesk(ReserveDeskCommandDto reserveDeskCommandDto)
         {
             try

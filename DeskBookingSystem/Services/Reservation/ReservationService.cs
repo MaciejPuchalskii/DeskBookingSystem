@@ -1,7 +1,6 @@
-﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Data.Models;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace DeskBookingSystem.Services
 {
@@ -30,23 +29,23 @@ namespace DeskBookingSystem.Services
                 throw new Exception("You can't change the reservation less than 24 hours before the reservation.");
             }
 
-            var reservationsOfThisDesk = _reservationRepository.GetAllReservationsByDeskId(reservation.DeskId);
+            var reservationsOfThisDesk = _reservationRepository.GetAllByDeskId(reservation.DeskId);
 
             bool isDeskReserved = reservationsOfThisDesk.Any(r =>
-     (changeReservationDateCommandDto.NewDate < r.BookingDate.AddDays(r.HowManyDays) &&
-      changeReservationDateCommandDto.NewDate.AddDays(reservation.HowManyDays) > r.BookingDate));
+     (changeReservationDateCommandDto.NewDate < r.BookingDate.AddDays(r.DaysCount) &&
+      changeReservationDateCommandDto.NewDate.AddDays(reservation.DaysCount) > r.BookingDate));
 
             if (isDeskReserved)
             {
                 throw new Exception("The new desk is not available for the selected time period.");
             }
 
-            if (changeReservationDateCommandDto.HowManyDays > 7)
+            if (changeReservationDateCommandDto.DaysCount > 7)
             {
                 throw new Exception("Reservation cannot be longer than 7 days.");
             }
 
-            _reservationRepository.UpdateReservation(reservation, changeReservationDateCommandDto.HowManyDays, changeReservationDateCommandDto.NewDate);
+            _reservationRepository.UpdateReservation(reservation, changeReservationDateCommandDto.DaysCount, changeReservationDateCommandDto.NewDate);
 
             return new ChangeReservationDateResponseDto()
             {
@@ -54,7 +53,7 @@ namespace DeskBookingSystem.Services
                 ReservationId = reservation.Id,
                 UserId = reservation.UserId,
                 startDate = reservation.ReservationDate,
-                endDate = reservation.ReservationDate.AddDays(reservation.HowManyDays),
+                endDate = reservation.ReservationDate.AddDays(reservation.DaysCount),
             };
         }
 
@@ -71,10 +70,10 @@ namespace DeskBookingSystem.Services
                 throw new Exception("You can't change the desk less than 24 hours before the reservation.");
             }
 
-            var newDeskReservations = _reservationRepository.GetAllReservationsByDeskId(changeReservationDeskCommandDto.DeskId);
+            var newDeskReservations = _reservationRepository.GetAllByDeskId(changeReservationDeskCommandDto.DeskId);
             bool hasConflictingReservation = newDeskReservations.Any(r =>
-                                                                           r.ReservationDate < reservation.ReservationDate.AddDays(reservation.HowManyDays) &&
-                                                                           r.ReservationDate.AddDays(r.HowManyDays) > reservation.ReservationDate);
+                                                                           r.ReservationDate < reservation.ReservationDate.AddDays(reservation.DaysCount) &&
+                                                                           r.ReservationDate.AddDays(r.DaysCount) > reservation.ReservationDate);
 
             if (hasConflictingReservation)
             {
@@ -104,7 +103,7 @@ namespace DeskBookingSystem.Services
                 throw new Exception("Desk is not available for reservation.");
             }
 
-            if (reserveDeskCommandDto.HowManyDays > 7)
+            if (reserveDeskCommandDto.DaysCount > 7)
             {
                 throw new Exception("Reservation cannot be longer than 7 days.");
             }
@@ -113,7 +112,7 @@ namespace DeskBookingSystem.Services
                 throw new Exception("Reservation date cannot be in the past.");
             }
 
-            var ifDeskHasAnyConflictingReservations = desk.Reservations.Any(r => r.ReservationDate < reserveDeskCommandDto.ReservationDate.AddDays(reserveDeskCommandDto.HowManyDays) && r.ReservationDate.AddDays(r.HowManyDays) > reserveDeskCommandDto.ReservationDate);
+            var ifDeskHasAnyConflictingReservations = desk.Reservations.Any(r => r.ReservationDate < reserveDeskCommandDto.ReservationDate.AddDays(reserveDeskCommandDto.DaysCount) && r.ReservationDate.AddDays(r.DaysCount) > reserveDeskCommandDto.ReservationDate);
 
             if (ifDeskHasAnyConflictingReservations)
             {
@@ -126,7 +125,7 @@ namespace DeskBookingSystem.Services
                 UserId = reserveDeskCommandDto.UserId,
                 BookingDate = DateTime.Now,
                 ReservationDate = reserveDeskCommandDto.ReservationDate,
-                HowManyDays = reserveDeskCommandDto.HowManyDays
+                DaysCount = reserveDeskCommandDto.DaysCount
             };
 
             _reservationRepository.Add(reservation);
@@ -135,7 +134,7 @@ namespace DeskBookingSystem.Services
             {
                 ReservationId = reservation.Id,
                 DeskId = reservation.DeskId,
-                EndDate = reservation.ReservationDate.AddDays(reservation.HowManyDays),
+                EndDate = reservation.ReservationDate.AddDays(reservation.DaysCount),
                 StartDate = reservation.ReservationDate
             };
         }

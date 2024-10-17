@@ -1,5 +1,5 @@
-﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Data.Models;
+using DeskBookingSystem.Dto;
 using DeskBookingSystem.Repositories;
 
 namespace DeskBookingSystem.Services
@@ -96,7 +96,7 @@ namespace DeskBookingSystem.Services
                     Id = r.Id,
                     BookingDate = r.BookingDate,
                     ReservationDate = r.ReservationDate,
-                    HowManyDays = r.HowManyDays,
+                    DaysCount = r.DaysCount,
                     UserId = r.UserId
                 }).ToList()
                 : new List<ReservationDto>()

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DeskBookingSystem.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class LocationController : Controller
     {
         private readonly ILocationService _locationService;
@@ -15,7 +17,7 @@ namespace DeskBookingSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost("/locations")]
+        [HttpPost("")]
         public ActionResult<AddLocationResponseDto> AddLocation(AddLocationCommandDto addLocationCommandDto)
         {
             try
@@ -41,7 +43,7 @@ namespace DeskBookingSystem.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("/locations/{locationId}/remove")]
+        [HttpDelete("{locationId}")]
         public ActionResult<RemoveLocationResponseDto> RemoveLocation(int locationId)
         {
             try
@@ -70,7 +72,7 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpGet("/locations/{locationId}/desks")]
+        [HttpGet("/{locationId}/desks")]
         public ActionResult<GetDesksFromLocationResponseDto> GetDesks(int locationId, bool? areOperational = null)
         {
             try
@@ -100,7 +102,7 @@ namespace DeskBookingSystem.Controllers
             }
         }
 
-        [HttpGet("/locations/{locationId}/desks/status")]
+        [HttpGet("/{locationId}/available-desks")]
         public ActionResult<GetDesksByAvailabilityResponseDto> GetDesksByAvailability(int locationId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             try

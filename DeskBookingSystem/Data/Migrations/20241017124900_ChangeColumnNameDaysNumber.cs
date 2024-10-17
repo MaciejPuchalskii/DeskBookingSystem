@@ -3,41 +3,41 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DeskBookingSystem.Migrations
+namespace DeskBookingSystem.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangeColumnsName : Migration
+    public partial class ChangeColumnNameDaysNumber : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "PasswordHash",
-                table: "Users",
-                newName: "Password");
+                name: "HowManyDays",
+                table: "Reservations",
+                newName: "DaysCount");
 
             migrationBuilder.UpdateData(
                 table: "Reservations",
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "BookingDate", "ReservationDate" },
-                values: new object[] { new DateTime(2024, 10, 12, 17, 33, 16, 803, DateTimeKind.Local).AddTicks(4138), new DateTime(2024, 10, 13, 17, 33, 16, 803, DateTimeKind.Local).AddTicks(4193) });
+                values: new object[] { new DateTime(2024, 10, 17, 14, 49, 0, 858, DateTimeKind.Local).AddTicks(8066), new DateTime(2024, 10, 18, 14, 49, 0, 858, DateTimeKind.Local).AddTicks(8115) });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "Password",
-                table: "Users",
-                newName: "PasswordHash");
+                name: "DaysCount",
+                table: "Reservations",
+                newName: "HowManyDays");
 
             migrationBuilder.UpdateData(
                 table: "Reservations",
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "BookingDate", "ReservationDate" },
-                values: new object[] { new DateTime(2024, 10, 12, 17, 17, 30, 745, DateTimeKind.Local).AddTicks(195), new DateTime(2024, 10, 13, 17, 17, 30, 745, DateTimeKind.Local).AddTicks(246) });
+                values: new object[] { new DateTime(2024, 10, 17, 0, 40, 26, 984, DateTimeKind.Local).AddTicks(5315), new DateTime(2024, 10, 18, 0, 40, 26, 984, DateTimeKind.Local).AddTicks(5411) });
         }
     }
 }

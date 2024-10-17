@@ -1,5 +1,4 @@
-﻿using DeskBookingSystem.Dto;
-using DeskBookingSystem.Models;
+﻿using DeskBookingSystem.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeskBookingSystem.Data
@@ -53,7 +52,7 @@ namespace DeskBookingSystem.Data
                     Id = 1,
                     BookingDate = DateTime.Now,
                     ReservationDate = DateTime.Now.AddDays(1),
-                    HowManyDays = 2,
+                    DaysCount = 2,
                     DeskId = 1,
                     UserId = 2
                 }

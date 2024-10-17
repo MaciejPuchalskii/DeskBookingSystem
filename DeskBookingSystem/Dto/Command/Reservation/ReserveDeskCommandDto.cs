@@ -8,6 +8,6 @@
 
         public DateTime ReservationDate { get; set; }
 
-        public int HowManyDays { get; set; }
+        public int DaysCount { get; set; }
     }
 }
