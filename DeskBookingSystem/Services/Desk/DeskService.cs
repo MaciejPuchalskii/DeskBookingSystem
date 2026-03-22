@@ -78,8 +78,8 @@ namespace DeskBookingSystem.Services
 
         public GetDeskDetailsResponseDto GetDeskDetails(GetDeskDetailsQueryDto getDeskDetailsQueryDto)
         {
-            var desk = _deskRepository.GetDetails(getDeskDetailsQueryDto.Id);
-            if (desk == null)
+            var item = _deskRepository.GetDetails(getDeskDetailsQueryDto.Id);
+            if (item == null)
             {
                 throw new Exception("Desk not found.");
             }
@@ -88,10 +88,10 @@ namespace DeskBookingSystem.Services
 
             return new GetDeskDetailsResponseDto()
             {
-                Id = desk.Id,
-                IsOperational = desk.IsOperational,
-                LocatioId = desk.LocationId,
-                Reservations = isAdmin ? desk.Reservations.Select(r => new ReservationDto
+                Id = item.Id,
+                IsOperational = item.IsOperational,
+                LocatioId = item.LocationId,
+                Reservations = isAdmin ? item.Reservations.Select(r => new ReservationDto
                 {
                     Id = r.Id,
                     BookingDate = r.BookingDate,
